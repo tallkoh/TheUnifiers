@@ -1,41 +1,16 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-
-// to change this const to our db
-const newsData = [
-  {
-    id: '1',
-    title: 'News Title 2',
-    description: 'News Description',
-    image: 'https://picsum.photos/200',
-  },
-  {
-    id: '2',
-    title: 'News Title',
-    description: 'News Description',
-    image: 'https://picsum.photos/202',
-  },
-  {
-    id: '3',
-    title: 'News Title 3',
-    description: 'News Description',
-    image: 'https://picsum.photos/201',
-  },
-  {
-    id: '4',
-    title: 'News Title 4',
-    description: 'News Description',
-    image: 'https://picsum.photos/200',
-  }
-];
+import newsData from './newsData';
 
 const App = () => {
   const renderItem = ({ item }) => (
     <View style={styles.newsItem}>
       <Image source={{ uri: item.image }} style={styles.newsImage} />
-      <Text style={styles.newsTitle}>{item.title}</Text>
-      <Text style={styles.newsDescription}>{item.description}</Text>
+      <View style={styles.newsInfoContainer}>
+        <Text style={styles.newsTitle}>{item.title}</Text>
+        <Text style={styles.newsDescription}>{item.description}</Text>
+      </View>
     </View>
   );
 
@@ -59,19 +34,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
   },
-  appName: {
-    font: 'SF Compact',
-    fontSize: 20,
-    fontWeight: 'black',
-  },
   newsItem: {
     marginBottom: 16,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   newsImage: {
     width: 353,
     height: 143,
     resizeMode: 'cover',
     borderRadius: 20,
+  },
+  newsInfoContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    padding: 14,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    justifyContent: 'center',
   },
   newsTitle: {
     fontSize: 20,
