@@ -35,7 +35,7 @@ News from dashboard is powered by Telegram message scraping.
 Discussions for all available modules in NUS that is powered by user accounts. Every module discussion is open to all students.
 
 #### Lost and Found
-Students can now locate their missing items by looking through listings posted by other students about the items they have found in school
+Students can now locate their missing items by looking through listings posted by other students about the items they have found in school.
 
 
 ## Timeline and Development Plan
