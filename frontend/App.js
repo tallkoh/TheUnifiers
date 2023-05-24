@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import newsData from './newsData';
 
 const App = () => {
@@ -24,6 +25,20 @@ const App = () => {
         keyExtractor={(item) => item.id}
       />
     </View>
+    <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>News</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Module Chats</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="locate" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
+        </TouchableOpacity>
+    </View>
     </SafeAreaView>
   );
 };
@@ -34,10 +49,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
   },
+  appName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
   newsItem: {
     marginBottom: 16,
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
   },
   newsImage: {
@@ -51,20 +69,39 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     padding: 14,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
-    justifyContent: 'center',
   },
   newsTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 8,
+    color: '#fff',
   },
   newsDescription: {
     fontSize: 16,
+    color: '#fff',
     marginTop: 4,
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    paddingTop: 8,
+  },
+  bottomBarButton: {
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  bottomBarButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  icon: {
+    marginBottom: 4,
   },
 });
 
