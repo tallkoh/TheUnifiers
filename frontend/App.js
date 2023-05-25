@@ -1,8 +1,14 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import newsData from './newsData';
+import ChatPage from './ChatPage';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   const renderItem = ({ item }) => (
@@ -16,21 +22,34 @@ const App = () => {
   );
 
   return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home">
+          {(props) => <HomeScreen {...props} renderItem={renderItem} />}
+        </Stack.Screen>
+        <Stack.Screen name="Chat" component={ChatPage} options={{ title: 'Module Chats' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+const HomeScreen = ({ navigation, renderItem }) => {
+  return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.container}>
-      <Text style={styles.appName}>UniFied</Text>
-      <FlatList
-        data={newsData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
-    </View>
-    <View style={styles.bottomBar}>
+      <View style={styles.container}>
+        <Text style={styles.appName}>UniFied</Text>
+        <FlatList
+          data={newsData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
+      <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomBarButton}>
           <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
           <Text style={styles.bottomBarButtonText}>News</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomBarButton}>
+        <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Chat')}>
           <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
           <Text style={styles.bottomBarButtonText}>Module Chats</Text>
         </TouchableOpacity>
@@ -38,7 +57,7 @@ const App = () => {
           <Icon name="locate" size={24} style={styles.icon} />
           <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
         </TouchableOpacity>
-    </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -108,3 +127,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
