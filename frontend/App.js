@@ -86,19 +86,21 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-around', // Space the buttons evenly
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#ccc',
     paddingTop: 8,
   },
   bottomBarButton: {
+    flex: 1, // Equal flex distribution for all buttons
     paddingVertical: 8,
     alignItems: 'center',
   },
   bottomBarButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   icon: {
     marginBottom: 4,
