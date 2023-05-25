@@ -8,7 +8,7 @@ Open your Telegram application right now - what do you see? Numerous NUS chats a
 
 To add on, it is even harder to identify channels for communication, especially for module discussions or finding items you have lost on campus. As such, we want to initiate a one-stop app for NUS students to keep track of information and to provide a safe and centralised channel for common discussions with peers and seniors.
 
-![The Unifiers  (1)](https://github.com/tallkoh/TheUnifiers/assets/110431837/58fb64aa-1aeb-478f-a69a-9a8c7ee8f159)
+![The Unifiers (1)](https://github.com/tallkoh/TheUnifiers/assets/110431837/58fb64aa-1aeb-478f-a69a-9a8c7ee8f159)
 
 
 ## Vision
