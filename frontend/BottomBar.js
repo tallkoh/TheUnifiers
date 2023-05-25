@@ -5,25 +5,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const BottomBar = ({navigation}) => {
     return (
         <View style={styles.bottomBar}>
-            <TouchableOpacity 
-                style={styles.bottomBarButton}
-                onPress={() => navigation.navigate('News')}>
-                <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
-                <Text style={styles.bottomBarButtonText}>News</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={styles.bottomBarButton}
-                onPress={() => navigation.navigate('ModuleChats')}>
-                <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
-                <Text style={styles.bottomBarButtonText}>Module Chats</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={styles.bottomBarButton}
-                onPress={() => navigation.navigate('LostAndFound')}>
-                <Icon name="locate" size={24} style={styles.icon} />
-                <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
-            </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>News</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Chat')}>
+          <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Module Chats</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="locate" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
+        </TouchableOpacity>
+      </View>
     );
 };
 
@@ -35,7 +29,6 @@ const styles = {
         borderTopWidth: 1,
         borderColor: '#ccc',
         paddingTop: 8,
-        paddingBottom: 4,
       },
       bottomBarButton: {
         flex: 1, // Equal flex distribution for all buttons

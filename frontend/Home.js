@@ -36,6 +36,22 @@ const App = () => {
   );
 };
 
+const HomeScreen = ({ navigation, renderItem }) => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Text style={styles.appName}>UniFied</Text>
+        <FlatList
+          data={newsData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
+
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
   appLogoContainer: {
     flexDirection: 'row',
