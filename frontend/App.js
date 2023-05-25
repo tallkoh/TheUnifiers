@@ -5,6 +5,8 @@ import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity
 import Icon from 'react-native-vector-icons/Ionicons';
 import newsData from './newsData';
 import ChatPage from './ChatPage';
+import logo from './assets/logo_transparent_notext.jpeg';
+import logoText from './assets/logo_transparent_onlytext.jpeg';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -23,7 +25,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home">
           {(props) => <HomeScreen {...props} renderItem={renderItem} />}
         </Stack.Screen>
@@ -36,8 +38,11 @@ const App = () => {
 const HomeScreen = ({ navigation, renderItem }) => {
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.appLogoContainer}>
+        <Image source={logo} style={styles.logo} />
+        <Image source={logoText} style={styles.logoText} />
+      </View>
       <View style={styles.container}>
-        <Text style={styles.appName}>UniFied</Text>
         <FlatList
           data={newsData}
           renderItem={renderItem}
@@ -63,22 +68,32 @@ const HomeScreen = ({ navigation, renderItem }) => {
 };
 
 const styles = StyleSheet.create({
+  appLogoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 25,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  logoText: {
+    width: 100,
+    height: 50,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
     padding: 16,
-  },
-  appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    marginTop: -5,
   },
   newsItem: {
     marginBottom: 16,
     alignItems: 'center',
   },
   newsImage: {
-    width: 353,
+    width: '100%',
     height: 143,
     resizeMode: 'cover',
     borderRadius: 20,
@@ -88,10 +103,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     padding: 14,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   newsTitle: {
     fontSize: 20,
