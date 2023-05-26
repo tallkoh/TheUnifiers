@@ -51,7 +51,7 @@ const HomeScreen = ({ navigation, renderItem }) => {
       </View>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomBarButton}>
-          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
+          <Icon name="md-newspaper" size={24} style={styles.icon} />
           <Text style={styles.bottomBarButtonText}>News</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Chat')}>
