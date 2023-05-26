@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    paddingLeft: 16,
+    padding: 16,
   },
   pageTitleInner: {
     fontSize: 24,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    padding: 16,
+    padding: 10,
   },
   messageList: {
     flexGrow: 1,
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCF8C6',
     marginVertical: 4,
     borderRadius: 8,
-    alignSelf: 'flex-start', // Align messages to the left
-    maxWidth: '80%', // Limit the maximum width of the message bubble
+    alignSelf: 'flex-start', 
+    maxWidth: '80%', 
   },
   messageInputContainer: {
     borderTopWidth: 1,
@@ -192,14 +192,14 @@ const styles = StyleSheet.create({
   messageInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#D7D7D7', // Use a color similar to Telegram's input field border color
+    borderColor: '#D7D7D7', 
     borderRadius: 20,
     paddingLeft: 2,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginRight: 8,
-    backgroundColor: '#FFF', // Use a color for input field background
-    color: '#333', // Use a color similar to Telegram's input field text color
+    backgroundColor: '#FFF', 
+    color: '#333', 
   },
   sendButton: {
     backgroundColor: '#007BFF',
@@ -213,14 +213,14 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around', // Space the buttons evenly
+    justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#ccc',
     paddingTop: 8,
   },
   bottomBarButton: {
-    flex: 1, // Equal flex distribution for all buttons
+    flex: 1, 
     paddingVertical: 8,
     alignItems: 'center',
   },
