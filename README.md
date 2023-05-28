@@ -41,4 +41,4 @@ Students can now locate their missing items by looking through listings posted b
 ## Timeline and Development Plan
 
 ## Work Log
-Our work log progress can be viewed [here](https://docs.google.com/spreadsheets/d/1dZPBE9q3Wi53JRkHT7QbWKUXcH8DfDbGEQ3-4UzmaF8/edit?usp=sharing).
+Our work log progress can be viewed [here](https://docs.google.com/spreadsheets/d/1evctZxslpMVcKZAfejuWrmujpLc73P-GATx4KaudZrY/edit?usp=sharing).
