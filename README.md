@@ -26,6 +26,12 @@ As a student, I want to seek advice from seniors who have taken certain modules.
 As a student, I want to reach out to find my items easily and securely.
 
 ## Features
+
+### App demo
+Install Expo Go on your mobile phone to preview our app:
+
+![Unified App Preview](https://github.com/tallkoh/TheUnifiers/assets/74520346/93ea8cad-9d11-4b4c-837d-8693f6de61a1)
+
 #### News Dashboard
 Vertical dashboard consisting of NUS public news from channels that you subscribe to in chronologically order.
 
