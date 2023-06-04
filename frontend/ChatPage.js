@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeArea
 import HomeScreen from './App'
 import Icon from 'react-native-vector-icons/Ionicons';
 
-
 const ChatPage = ({ navigation }) => {
   const [chats, setChats] = useState([
     { id: '1', title: 'Chat 1', messages: [] },
@@ -57,7 +56,12 @@ const ChatPage = ({ navigation }) => {
   if (currentChat) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.pageTitle}>{currentChat.title}</Text>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => setCurrentChat(null)}>
+            <Icon name="arrow-back-outline" size={24} style={styles.backButtonIcon} />
+          </TouchableOpacity>
+          <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
+        </View>
         <FlatList
           data={currentChat.messages}
           renderItem={renderMessageItem}
@@ -82,12 +86,12 @@ const ChatPage = ({ navigation }) => {
 
         {/* Bottom bar */}
         <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
-          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
-          <Text style={styles.bottomBarButtonText}>News</Text>
-        </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomBarButton} >
-            <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
+          <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
+            <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
+            <Text style={styles.bottomBarButtonText}>News</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomBarButton}>
+            <Icon name="chatbox-ellipses" size={24} style={styles.icon} />
             <Text style={styles.bottomBarButtonText}>Module Chats</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottomBarButton}>
@@ -110,19 +114,19 @@ const ChatPage = ({ navigation }) => {
 
       {/* Bottom bar */}
       <View style={styles.bottomBar}>
-      <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
-        <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
-        <Text style={styles.bottomBarButtonText}>News</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Chat')}>
-        <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
-        <Text style={styles.bottomBarButtonText}>Module Chats</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.bottomBarButton}>
-        <Icon name="locate" size={24} style={styles.icon} />
-        <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
+          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>News</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="chatbox-ellipses" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Module Chats</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bottomBarButton}>
+          <Icon name="locate" size={24} style={styles.icon} />
+          <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -132,10 +136,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    padding: 16,
+  },
+  backButton: {
+    marginRight: 8,
+  },
+  backButtonIcon: {
+    color: '#333',
+  },
   pageTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     padding: 16,
+  },
+  pageTitleInner: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   chatItem: {
     padding: 16,
@@ -147,6 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    padding: 10,
   },
   messageList: {
     flexGrow: 1,
@@ -157,8 +179,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCF8C6',
     marginVertical: 4,
     borderRadius: 8,
-    alignSelf: 'flex-start', // Align messages to the left
-    maxWidth: '80%', // Limit the maximum width of the message bubble
+    alignSelf: 'flex-start', 
+    maxWidth: '80%', 
   },
   messageInputContainer: {
     borderTopWidth: 1,
@@ -171,14 +193,14 @@ const styles = StyleSheet.create({
   messageInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#D7D7D7', // Use a color similar to Telegram's input field border color
+    borderColor: '#D7D7D7', 
     borderRadius: 20,
     paddingLeft: 2,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginRight: 8,
-    backgroundColor: '#FFF', // Use a color for input field background
-    color: '#333', // Use a color similar to Telegram's input field text color
+    backgroundColor: '#FFF', 
+    color: '#333', 
   },
   sendButton: {
     backgroundColor: '#007BFF',
@@ -192,14 +214,14 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around', // Space the buttons evenly
+    justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#ccc',
     paddingTop: 8,
   },
   bottomBarButton: {
-    flex: 1, // Equal flex distribution for all buttons
+    flex: 1, 
     paddingVertical: 8,
     alignItems: 'center',
   },

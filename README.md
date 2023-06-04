@@ -8,7 +8,7 @@ Open your Telegram application right now - what do you see? Numerous NUS chats a
 
 To add on, it is even harder to identify channels for communication, especially for module discussions or finding items you have lost on campus. As such, we want to initiate a one-stop app for NUS students to keep track of information and to provide a safe and centralised channel for common discussions with peers and seniors.
 
-![The Unifiers  (1)](https://github.com/tallkoh/TheUnifiers/assets/110431837/58fb64aa-1aeb-478f-a69a-9a8c7ee8f159)
+![The Unifiers (1)](https://github.com/tallkoh/TheUnifiers/assets/110431837/58fb64aa-1aeb-478f-a69a-9a8c7ee8f159)
 
 
 ## Vision
@@ -26,6 +26,12 @@ As a student, I want to seek advice from seniors who have taken certain modules.
 As a student, I want to reach out to find my items easily and securely.
 
 ## Features
+
+### App demo
+Install Expo Go on your mobile phone to preview our app:
+
+![Unified App Preview](https://github.com/tallkoh/TheUnifiers/assets/74520346/93ea8cad-9d11-4b4c-837d-8693f6de61a1)
+
 #### News Dashboard
 Vertical dashboard consisting of NUS public news from channels that you subscribe to in chronologically order.
 
@@ -41,4 +47,4 @@ Students can now locate their missing items by looking through listings posted b
 ## Timeline and Development Plan
 
 ## Work Log
-Our work log progress can be viewed [here](https://docs.google.com/spreadsheets/d/1dZPBE9q3Wi53JRkHT7QbWKUXcH8DfDbGEQ3-4UzmaF8/edit?usp=sharing).
+Our work log progress can be viewed [here](https://docs.google.com/spreadsheets/d/1evctZxslpMVcKZAfejuWrmujpLc73P-GATx4KaudZrY/edit?usp=sharing).
