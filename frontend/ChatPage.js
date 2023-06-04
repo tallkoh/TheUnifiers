@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
+import HomeScreen from './App'
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ChatPage = ({ navigation }) => {
@@ -106,7 +107,7 @@ const ChatPage = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.pageTitle}>Chats</Text>
       <FlatList
-        data={chats}
+        data={chats} 
         renderItem={renderChatItem}
         keyExtractor={(item) => item.id}
       />

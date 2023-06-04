@@ -29,7 +29,7 @@ const App = () => {
         <Stack.Screen name="Home">
           {(props) => <HomeScreen {...props} renderItem={renderItem} />}
         </Stack.Screen>
-        <Stack.Screen name="Chat" component={ChatPage} options={{ title: 'Module Chats' }} />
+        <Stack.Screen name="Chat" component={ChatPage} options={{ headerLeft: null, title: 'Module Chats' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -142,4 +142,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
