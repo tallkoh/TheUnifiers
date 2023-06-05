@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BottomBar from '../BottomBar';
 
 const ChatPage = ({ navigation }) => {
   const [chats, setChats] = useState([
@@ -84,20 +85,7 @@ const ChatPage = ({ navigation }) => {
         </SafeAreaView>
 
         {/* Bottom bar */}
-        <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
-            <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
-            <Text style={styles.bottomBarButtonText}>News</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomBarButton}>
-            <Icon name="chatbox-ellipses" size={24} style={styles.icon} />
-            <Text style={styles.bottomBarButtonText}>Module Chats</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomBarButton}>
-            <Icon name="locate" size={24} style={styles.icon} />
-            <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
-          </TouchableOpacity>
-        </View>
+        <BottomBar navigation={navigation} />
       </SafeAreaView>
     );
   }
@@ -106,7 +94,7 @@ const ChatPage = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.pageTitle}>Chats</Text>
       <FlatList
-        data={chats}
+        data={chats} 
         renderItem={renderChatItem}
         keyExtractor={(item) => item.id}
       />
