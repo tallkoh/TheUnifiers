@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
 
@@ -38,11 +38,14 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.imageContainer}></View>
+       <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
       <TextInput
         style={styles.input}
         placeholder="Email"
         onChangeText={text => setEmail(text)}
         value={email}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -50,6 +53,7 @@ const LoginScreen = () => {
         secureTextEntry
         onChangeText={text => setPassword(text)}
         value={password}
+        autoCapitalize="none"
       />
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
@@ -67,6 +71,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  imageContainer: {
+    marginTop: -120,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: 'center',
   },
   input: {
     width: '80%',
