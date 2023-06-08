@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
+import { auth } from '../firebase'; 
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -19,21 +20,15 @@ const LoginScreen = () => {
     return unsubscribe
   }, [])
 
-  const handleSignUp = () => {
-    auth
-        .createUserWithEmailAndPassword(email, password)
-        .then(userCredentials => {
-            const user = userCredentials.user;
-            console.log('Registered with:', user.email);
-        })
-        .catch(error => alert(error.message))
-  }
-
   const handleLogin = () => {
-    // Perform login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // You can add your own login logic using APIs or authentication services
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        console.log('User successfully logged in!');
+      })
+      .catch(error => {
+        console.log('Login error:', error);
+      }); // Add closing parenthesis here
   };
 
   return (
@@ -58,7 +53,10 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleSignUp}>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => navigation.navigate('Register')}
+      >
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
     </View>
