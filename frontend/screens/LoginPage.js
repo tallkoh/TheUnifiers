@@ -1,45 +1,86 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase'; 
-
+import { auth, firestore } from '../firebase';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState(''); // Use a single state variable for email or username
   const [password, setPassword] = useState('');
 
   const navigation = useNavigation();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-          navigation.navigate("Home")
-        }
-      })
+      if (user) {
+        setTimeout(() => {
+          navigation.navigate('Home');
+        }, 0);
+      }
+    });
 
-    return unsubscribe
-  }, [])
+    return unsubscribe;
+  }, []);
 
   const handleLogin = () => {
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('User successfully logged in!');
-      })
-      .catch(error => {
-        console.log('Login error:', error);
-      }); // Add closing parenthesis here
+    firestore
+    .collection('users')
+    .where('email', '==', emailOrUsername)
+    .get()
+    .then(querySnapshot => {
+      if (querySnapshot.empty) {
+        // If no email matches, check for username
+        firestore
+          .collection('users')
+          .where('username', '==', emailOrUsername)
+          .get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              console.log('User not found!');
+            } else {
+              // Log in with the matched username
+              const userDoc = querySnapshot.docs[0];
+              const userData = userDoc.data();
+              auth
+                .signInWithEmailAndPassword(userData.email, password)
+                .then(() => {
+                  console.log('User successfully logged in!');
+                })
+                .catch(error => {
+                  console.log('Login error:', error);
+                });
+            }
+          })
+          .catch(error => {
+            console.log('Query error:', error);
+          });
+      } else {
+        // Log in with the matched email
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        auth
+          .signInWithEmailAndPassword(userData.email, password)
+          .then(() => {
+            console.log('User successfully logged in!');
+          })
+          .catch(error => {
+            console.log('Login error:', error);
+          });
+      }
+    })
+    .catch(error => {
+      console.log('Query error:', error);
+    });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}></View>
-       <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
+      <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        onChangeText={text => setEmail(text)}
-        value={email}
+        placeholder="Email or Username" // Modify the placeholder
+        onChangeText={text => setEmailOrUsername(text)}
+        value={emailOrUsername}
         autoCapitalize="none"
       />
       <TextInput

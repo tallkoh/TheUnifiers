@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { SafeAreaView, View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
+import { auth, firestore } from '../firebase';
 
 const RegisterScreen = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  
   const navigation = useNavigation();
 
   const handleSignUp = () => {
@@ -22,10 +23,24 @@ const RegisterScreen = () => {
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
+        saveUserData(user.uid);
         alert('Account successfully registered!', 'Please proceed to login!');
         navigation.navigate('Login');
       })
       .catch(error => alert(error.message));
+  };
+
+  const saveUserData = (userId) => {
+    firestore.collection('users').doc(userId).set({
+      username: username,
+      email: email,
+    })
+      .then(() => {
+        console.log('User data saved successfully!');
+      })
+      .catch(error => {
+        console.log('Error saving user data:', error);
+      });
   };
 
   const handleGoBack = () => {
@@ -42,6 +57,13 @@ const RegisterScreen = () => {
       <View style={styles.content}>
         <View style={styles.imageContainer}></View>
         <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          onChangeText={text => setUsername(text)}
+          value={username}
+          autoCapitalize="none"
+        />
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -85,13 +107,13 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
   },
   content: {
-    flex: 22,
+    flex: 15,
+    paddingBottom: 78,
     justifyContent: 'center',
     alignItems: 'center',
   },
   goBackButton: {
     marginRight: 10,
-    paddingTop: 10, 
   },
   goBackButtonIcon: {
     color: '#333',
