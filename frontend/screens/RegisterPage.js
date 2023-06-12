@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
+import { SafeAreaView, View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
@@ -24,7 +24,7 @@ const RegisterScreen = () => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
         saveUserData(user.uid);
-        alert('Account successfully registered!', 'Please proceed to login!');
+        Alert.prompt('Account successfully registered!', 'Please proceed to login!');
         navigation.navigate('Login');
       })
       .catch(error => alert(error.message));

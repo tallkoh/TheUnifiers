@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import BottomBar from '../BottomBar';
+import { firestore, auth } from '../firebase';
 
 const ChatPage = ({ navigation }) => {
-  const [chats, setChats] = useState([
-    { id: '1', title: 'Chat 1', messages: [] },
-    { id: '2', title: 'Chat 2', messages: [] },
-    { id: '3', title: 'Chat 3', messages: [] },
-    { id: '4', title: 'Chat 4', messages: [] },
-    { id: '5', title: 'Chat 5', messages: [] },
-    // Add more chats as needed
-  ]);
-
+  const [chats, setChats] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [messageText, setMessageText] = useState('');
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
+      const updatedChats = snapshot.docs.map(doc => {
+        const { title, messages } = doc.data();
+        return {
+          id: doc.id,
+          title,
+          messages,
+        };
+      });
+      setChats(updatedChats);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = firestore.collection('users').doc(auth.currentUser.uid).onSnapshot(snapshot => {
+      const userData = snapshot.data();
+      setUsername(userData.username);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleChatPress = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
@@ -26,19 +44,30 @@ const ChatPage = ({ navigation }) => {
       return;
     }
 
-    const newMessage = messageText.trim();
+    const newMessage = {
+      username,
+      message: messageText.trim(),
+    };
     setMessageText('');
 
-    const updatedChats = chats.map((chat) => {
-      if (chat.id === currentChat.id) {
-        return {
-          ...chat,
-          messages: [...chat.messages, newMessage],
-        };
-      }
-      return chat;
+    firestore.collection('chats').doc(currentChat.id).update({
+      messages: [...currentChat.messages, newMessage],
     });
-    setChats(updatedChats);
+  };
+
+  const handleCreateChat = () => {
+    Alert.prompt(
+      'Create New Chat',
+      'Enter the chat name:',
+      (chatName) => {
+        if (chatName.trim() !== '') {
+          firestore.collection('chats').add({
+            title: chatName.trim(),
+            messages: [],
+          });
+        }
+      }
+    );
   };
 
   const renderChatItem = ({ item }) => (
@@ -47,11 +76,25 @@ const ChatPage = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const renderMessageItem = ({ item }) => (
-    <View style={styles.messageItem}>
-      <Text>{item}</Text>
-    </View>
-  );
+  const renderMessageItem = ({ item, index }) => {
+    const isSentByCurrentUser = item.username === username;
+    const containerStyle = isSentByCurrentUser
+      ? styles.sentMessageContainer
+      : styles.receivedMessageContainer;
+    const itemStyle = isSentByCurrentUser
+      ? styles.sentMessageItem
+      : styles.receivedMessageItem;
+    const usernameStyle = index === 0 ? styles.username : styles.hiddenUsername;
+  
+    return (
+      <View style={[styles.messageItemContainer, containerStyle]}>
+        <View style={[styles.messageItem, itemStyle]}>
+          <Text style={usernameStyle}>{index === 0 ? item.username : ''}</Text>
+          <Text style={styles.messageText}>{item.message}</Text>
+        </View>
+      </View>
+    );
+  };
 
   if (currentChat) {
     return (
@@ -83,37 +126,23 @@ const ChatPage = ({ navigation }) => {
             <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
         </SafeAreaView>
-
-        {/* Bottom bar */}
-        <BottomBar navigation={navigation} />
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.pageTitle}>Chats</Text>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.createChatButton} onPress={handleCreateChat}>
+          <Icon name="add-outline" size={24} style={styles.createChatButtonIcon} />
+        </TouchableOpacity>
+        <Text style={styles.pageTitle}>Chats</Text>
+      </View>
       <FlatList
-        data={chats} 
+        data={chats}
         renderItem={renderChatItem}
         keyExtractor={(item) => item.id}
       />
-
-      {/* Bottom bar */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
-          <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
-          <Text style={styles.bottomBarButtonText}>News</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomBarButton}>
-          <Icon name="chatbox-ellipses" size={24} style={styles.icon} />
-          <Text style={styles.bottomBarButtonText}>Module Chats</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomBarButton}>
-          <Icon name="locate" size={24} style={styles.icon} />
-          <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -135,6 +164,15 @@ const styles = StyleSheet.create({
   },
   backButtonIcon: {
     color: '#333',
+  },
+  createChatButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+  },
+  createChatButtonIcon: {
+    color: '#007BFF',
   },
   pageTitle: {
     fontSize: 24,
@@ -161,13 +199,42 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: 8,
   },
+  messageItemContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  receivedMessageContainer: {
+    justifyContent: 'flex-start',
+  },
+  sentMessageContainer: {
+    justifyContent: 'flex-end',
+  },
   messageItem: {
     padding: 8,
     backgroundColor: '#DCF8C6',
-    marginVertical: 4,
-    borderRadius: 8,
-    alignSelf: 'flex-start', 
-    maxWidth: '80%', 
+    marginVertical: 2,
+    borderRadius: 16,
+    maxWidth: '80%',
+  },
+  receivedMessageItem: {
+    alignSelf: 'flex-start',
+  },
+  sentMessageItem: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#DCF8C6',
+  },
+  username: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  hiddenUsername: {
+    display: 'none',
+  },
+  messageText: {
+    fontWeight: 'normal',
   },
   messageInputContainer: {
     borderTopWidth: 1,
@@ -180,45 +247,23 @@ const styles = StyleSheet.create({
   messageInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#D7D7D7', 
+    borderColor: '#D3D3D3',
     borderRadius: 20,
-    paddingLeft: 2,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 16,
     marginRight: 8,
-    backgroundColor: '#FFF', 
-    color: '#333', 
   },
   sendButton: {
     backgroundColor: '#007BFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   sendButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-    paddingTop: 8,
-  },
-  bottomBarButton: {
-    flex: 1, 
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  bottomBarButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  icon: {
-    marginBottom: 4,
   },
 });
 
