@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import BottomBar from '../BottomBar';
 import { firestore, auth } from '../firebase';
 
 const ChatPage = ({ navigation }) => {
@@ -39,20 +40,27 @@ const ChatPage = ({ navigation }) => {
     setCurrentChat(chat);
   };
 
-  const handleSendMessage = () => {
-    if (messageText.trim() === '') {
+  const handleSendMessage = async () => {
+    if (!currentChat || messageText.trim() === '') {
       return;
     }
-
+  
     const newMessage = {
       username,
       message: messageText.trim(),
     };
     setMessageText('');
-
-    firestore.collection('chats').doc(currentChat.id).update({
-      messages: [...currentChat.messages, newMessage],
+  
+    const updatedMessages = [...currentChat.messages, newMessage]; // Update the messages array
+  
+    await firestore.collection('chats').doc(currentChat.id).update({
+      messages: updatedMessages,
     });
+  
+    setCurrentChat(prevChat => ({
+      ...prevChat,
+      messages: updatedMessages,
+    }));
   };
 
   const handleCreateChat = () => {
@@ -88,8 +96,11 @@ const ChatPage = ({ navigation }) => {
   
     return (
       <View style={[styles.messageItemContainer, containerStyle]}>
+        {!isSentByCurrentUser && index === 0 && (
+          <Text style={styles.chatName}>{currentChat.title}</Text>
+        )}
         <View style={[styles.messageItem, itemStyle]}>
-          <Text style={usernameStyle}>{index === 0 ? item.username : ''}</Text>
+          <Text style={usernameStyle}>{item.username}</Text>
           <Text style={styles.messageText}>{item.message}</Text>
         </View>
       </View>
@@ -121,30 +132,36 @@ const ChatPage = ({ navigation }) => {
             autoCorrect={false}
             onSubmitEditing={handleSendMessage}
             returnKeyType="send"
+            autoCapitalize="none" 
           />
           <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
             <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
         </SafeAreaView>
+        <BottomBar navigation={navigation} />
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.pageTitle}>Chats</Text>
+          <View style={styles.headerContent}>
+            <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleCreateChat}>
+              <Icon name="add-outline" size={24} style={styles.createChatButtonIcon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <FlatList
+          data={chats.slice().reverse()} // Reverse the order of the chat items
+          renderItem={renderChatItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.messageList}
+        />
+        <BottomBar navigation={navigation} />
       </SafeAreaView>
     );
   }
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.createChatButton} onPress={handleCreateChat}>
-          <Icon name="add-outline" size={24} style={styles.createChatButtonIcon} />
-        </TouchableOpacity>
-        <Text style={styles.pageTitle}>Chats</Text>
-      </View>
-      <FlatList
-        data={chats}
-        renderItem={renderChatItem}
-        keyExtractor={(item) => item.id}
-      />
-    </SafeAreaView>
-  );
 };
 
 const styles = StyleSheet.create({
@@ -154,6 +171,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between', // Align items to the start and end of the container
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -166,18 +184,14 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   createChatButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    zIndex: 1,
+    marginRight: -16,
   },
-  createChatButtonIcon: {
-    color: '#007BFF',
+  createChatButton: {
+    marginLeft: 'auto', 
   },
   pageTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    padding: 16,
   },
   pageTitleInner: {
     fontSize: 24,
@@ -198,6 +212,7 @@ const styles = StyleSheet.create({
   messageList: {
     flexGrow: 1,
     paddingTop: 8,
+    paddingBottom: 16, // Add some bottom padding to prevent the last chat item from being hidden behind the bottom bar
   },
   messageItemContainer: {
     paddingHorizontal: 16,
@@ -226,44 +241,52 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     backgroundColor: '#DCF8C6',
   },
+  messageText: {
+    fontSize: 16,
+    color: '#333',
+  },
   username: {
-    fontWeight: 'bold',
+    fontSize: 12,
+    color: '#999',
     marginBottom: 4,
   },
   hiddenUsername: {
-    display: 'none',
-  },
-  messageText: {
-    fontWeight: 'normal',
+    height: 0,
+    width: 0,
   },
   messageInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     paddingVertical: 8,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 16,
   },
   messageInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#D3D3D3',
+    height: 40,
+    backgroundColor: '#f2f2f2',
+    paddingHorizontal: 12,
     borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 16,
     marginRight: 8,
   },
   sendButton: {
     backgroundColor: '#007BFF',
     borderRadius: 20,
-    paddingVertical: 10,
     paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   sendButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  chatName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#666',
+    alignSelf: 'center',
+    marginVertical: 8,
   },
 });
 
