@@ -46,12 +46,12 @@ const ChatPage = ({ navigation }) => {
     }
   
     const newMessage = {
-      username: username, // Add the username to the new message
+      username: username, 
       message: messageText.trim(),
     };
     setMessageText('');
   
-    const updatedMessages = [...currentChat.messages, newMessage]; // Update the messages array
+    const updatedMessages = [...currentChat.messages, newMessage];
   
     await firestore.collection('chats').doc(currentChat.id).update({
       messages: updatedMessages,
@@ -92,15 +92,11 @@ const ChatPage = ({ navigation }) => {
     const itemStyle = isSentByCurrentUser
       ? styles.sentMessageItem
       : styles.receivedMessageItem;
-    const usernameStyle = index === 0 ? styles.username : styles.hiddenUsername;
   
     return (
       <View style={[styles.messageItemContainer, containerStyle]}>
-        {!isSentByCurrentUser && index === 0 && (
-          <Text style={styles.chatName}>{currentChat.title}</Text>
-        )}
-        <View style={[styles.messageItem, itemStyle]}>
-          <Text style={usernameStyle}>{item.username}</Text>
+        <View style={styles.messageItem}>
+          <Text style={styles.username}>{item.username}</Text>
           <Text style={styles.messageText}>{item.message}</Text>
         </View>
       </View>
@@ -153,7 +149,7 @@ const ChatPage = ({ navigation }) => {
           </View>
         </View>
         <FlatList
-          data={chats.slice().reverse()} // Reverse the order of the chat items
+          data={chats.slice().reverse()}
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.messageList}
@@ -214,12 +210,10 @@ const styles = StyleSheet.create({
   messageList: {
     flexGrow: 1,
     paddingTop: 8,
-    paddingBottom: 16, // Add some bottom padding to prevent the last chat item from being hidden behind the bottom bar
+    paddingBottom: 16, 
   },
   messageItemContainer: {
     paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 4,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
@@ -251,7 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     marginBottom: 4,
-  },
+  },  
   hiddenUsername: {
     height: 0,
     width: 0,
