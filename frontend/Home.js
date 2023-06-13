@@ -7,7 +7,7 @@ import logoText from './assets/logo_transparent_onlytext.jpeg';
 import BottomBar from './BottomBar';
 
 
-const App = () => {
+const Home = () => {
   const renderItem = ({ item }) => (
     <View style={styles.newsItem}>
       <Image source={{ uri: item.image }} style={styles.newsImage} />
@@ -32,22 +32,6 @@ const App = () => {
         keyExtractor={(item) => item.id}
       />
     </View>
-    </SafeAreaView>
-  );
-};
-
-const HomeScreen = ({ navigation, renderItem }) => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <Text style={styles.appName}>UniFied</Text>
-        <FlatList
-          data={newsData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
-
     </SafeAreaView>
   );
 };
@@ -105,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default Home;
