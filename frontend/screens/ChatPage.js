@@ -46,7 +46,7 @@ const ChatPage = ({ navigation }) => {
     }
   
     const newMessage = {
-      username,
+      username: username, // Add the username to the new message
       message: messageText.trim(),
     };
     setMessageText('');
@@ -62,7 +62,7 @@ const ChatPage = ({ navigation }) => {
       messages: updatedMessages,
     }));
   };
-
+  
   const handleCreateChat = () => {
     Alert.prompt(
       'Create New Chat',
@@ -148,7 +148,7 @@ const ChatPage = ({ navigation }) => {
           <Text style={styles.pageTitle}>Chats</Text>
           <View style={styles.headerContent}>
             <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleCreateChat}>
-              <Icon name="add-outline" size={24} style={styles.createChatButtonIcon} />
+              <Icon name="create-outline" size={24} style={styles.createChatButtonIcon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -171,8 +171,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Align items to the start and end of the container
     alignItems: 'center',
+    justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     padding: 16,
@@ -194,8 +194,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pageTitleInner: {
+    flex: 1,
     fontSize: 24,
     fontWeight: 'bold',
+    marginLeft: 8,
   },
   chatItem: {
     padding: 16,

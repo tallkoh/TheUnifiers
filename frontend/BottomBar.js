@@ -6,7 +6,7 @@ const BottomBar = ({ navigation }) => {
     return (
       <View style={styles.bottomBar}>
       <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Home')}>
-        <Icon name="md-newspaper" size={24} style={styles.icon} />
+        <Icon name="md-newspaper-outline" size={24} style={styles.icon} />
         <Text style={styles.bottomBarButtonText}>News</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('Chat')}>
