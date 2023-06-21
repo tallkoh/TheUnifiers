@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
-import newsData from '../newsData';
+import { auth, firestore } from '../firebase';
 import logo from '../assets/logo_transparent_notext.jpeg';
 import logoText from '../assets/logo_transparent_onlytext.jpeg';
 import BottomBar from '../BottomBar';
@@ -10,6 +9,22 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const HomePage = () => {
   const navigation = useNavigation();
+  const [news, setNews] = useState([]);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const newsRef = firestore.collection('news');
+        const snapshot = await newsRef.get();
+        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text }));
+        setNews(newsData);
+      } catch (error) {
+        console.log('Error fetching news:', error);
+      }
+    };
+
+    fetchNews();
+  }, []);
 
   const handleLogout = () => {
     auth
@@ -25,10 +40,8 @@ const HomePage = () => {
 
   const renderNewsItem = ({ item }) => (
     <View style={styles.newsItem}>
-      <Image source={{ uri: item.image }} style={styles.newsImage} />
       <View style={styles.newsInfoContainer}>
-        <Text style={styles.newsTitle}>{item.title}</Text>
-        <Text style={styles.newsDescription}>{item.description}</Text>
+        <Text style={styles.newsTitle}>{item.message_text}</Text>
       </View>
     </View>
   );
@@ -45,7 +58,7 @@ const HomePage = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        <FlatList data={newsData} renderItem={renderNewsItem} keyExtractor={item => item.id} />
+        <FlatList data={news} renderItem={renderNewsItem} keyExtractor={item => item.id} />
       </View>
       <BottomBar navigation={navigation} />
     </SafeAreaView>
@@ -86,31 +99,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
   },
-  newsImage: {
-    width: '100%',
-    height: 143,
-    resizeMode: 'cover',
-    borderRadius: 20,
-  },
   newsInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    width: 400,
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     padding: 14,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderRadius: 20,
   },
   newsTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-  },
-  newsDescription: {
-    fontSize: 16,
-    color: '#fff',
-    marginTop: 4,
   },
 });
 

@@ -13,7 +13,7 @@ const BottomBar = ({ navigation }) => {
         <Icon name="chatbox-ellipses-outline" size={24} style={styles.icon} />
         <Text style={styles.bottomBarButtonText}>Module Chats</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.bottomBarButton}>
+      <TouchableOpacity style={styles.bottomBarButton} onPress={() => navigation.navigate('LostAndFound')}>
         <Icon name="locate" size={24} style={styles.icon} />
         <Text style={styles.bottomBarButtonText}>Lost & Found</Text>
       </TouchableOpacity>
