@@ -47,7 +47,7 @@ To prevent users from signing up with the same username or email, duplicate user
 After an account has been successfully created, the user will be redirected to the login page
 
 #### News Dashboard
-![News Dashboard Preview] (https://github.com/tallkoh/TheUnifiers/assets/110431837/ce74cea1-835a-4336-9e0e-3b6e2d1ade22)
+![News Dashboard Preview](https://github.com/tallkoh/TheUnifiers/assets/110431837/ce74cea1-835a-4336-9e0e-3b6e2d1ade22)
 Vertical dashboard consisting of NUS public news from channels that you subscribe to in chronologically order.
 
 News from dashboard is powered by Telegram message scraping.
