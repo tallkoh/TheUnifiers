@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
-import { ImagePicker, launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore } from '../firebase';
-import BottomBar from '../BottomBar';
 import { useNavigation } from '@react-navigation/native';
 
 const ListingPage = () => {
@@ -10,6 +9,7 @@ const ListingPage = () => {
   const [imageUri, setImageUri] = useState(null);
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
 
   const handleChooseImage = () => {
     launchImageLibrary({ mediaType: 'photo' }, response => {
@@ -25,6 +25,7 @@ const ListingPage = () => {
         image: imageUri,
         itemName: itemName,
         description: description,
+        location: location,
       };
 
       // Store the new item in Firestore
@@ -34,21 +35,18 @@ const ListingPage = () => {
       setImageUri(null);
       setItemName('');
       setDescription('');
+      setLocation('');
 
-      // Optionally, show a success message or navigate to a different page
-      // after successfully adding the item.
+      // Navigate back to the LostAndFound page
+      navigation.goBack();
     } catch (error) {
       console.log('Error adding item:', error);
     }
   };
 
-  const handleGoBack = () => {
-    navigation.navigate("LostAndFound");
-  };
-
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>{'< Back'}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleChooseImage}>
@@ -71,6 +69,12 @@ const ListingPage = () => {
         numberOfLines={4}
         value={description}
         onChangeText={text => setDescription(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Location"
+        value={location}
+        onChangeText={text => setLocation(text)}
       />
       <Button title="Add Item" onPress={handleAddItem} />
     </View>

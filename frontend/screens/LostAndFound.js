@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { auth, firestore, storage } from '../firebase';
+import { firestore } from '../firebase';
 import BottomBar from '../BottomBar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -11,18 +10,15 @@ const LostAndFound = () => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const fetchItems = async () => {
-    try {
-      const snapshot = await firestore.collection('items').get();
+    const unsubscribe = firestore.collection('items').onSnapshot(snapshot => {
       const itemsData = snapshot.docs.map(doc => doc.data());
       setItems(itemsData);
-    } catch (error) {
-      console.log('Error fetching items:', error);
-    }
-  };
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleAddListing = () => {
     navigation.navigate('ListingPage');
@@ -34,7 +30,7 @@ const LostAndFound = () => {
       <View style={styles.itemInfoContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDescription}>{item.description}</Text>
-        <Text style={styles.itemPrice}>Price: ${item.price}</Text>
+        <Text style={styles.itemLocation}>Location: {item.location}</Text>
       </View>
     </View>
   );
@@ -55,6 +51,7 @@ const LostAndFound = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -67,6 +64,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
     paddingLeft: 10,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   pageTitle: {
     fontSize: 24,
@@ -85,6 +85,8 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   itemImage: {
     width: 100,
