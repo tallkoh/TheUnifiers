@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 import logo from '../assets/logo_transparent_notext.jpeg';
@@ -10,6 +10,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const HomePage = () => {
   const navigation = useNavigation();
   const [news, setNews] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [filteredNews, setFilteredNews] = useState([]);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -25,6 +27,17 @@ const HomePage = () => {
 
     fetchNews();
   }, []);
+
+  useEffect(() => {
+    if (searchText === '') {
+      setFilteredNews(news);
+    } else {
+      const filtered = news.filter(item =>
+        item.message_text.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredNews(filtered);
+    }
+  }, [searchText, news]);
 
   const handleLogout = () => {
     auth
@@ -46,6 +59,17 @@ const HomePage = () => {
     </View>
   );
 
+  const handleSearch = () => {
+    if (searchText === '') {
+      setFilteredNews(news);
+    } else {
+      const filtered = news.filter(item =>
+        item.message_text.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredNews(filtered);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -57,8 +81,20 @@ const HomePage = () => {
           <Icon name="log-out-outline" size={28} color="#333" />
         </TouchableOpacity>
       </View>
-      <View style={styles.container}>
-        <FlatList data={news} renderItem={renderNewsItem} keyExtractor={item => item.id} />
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchText}
+          onChangeText={setSearchText}
+          onSubmitEditing={handleSearch}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Icon name="search-outline" size={24} color="#333" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.newsContainer}>
+        <FlatList data={filteredNews} renderItem={renderNewsItem} keyExtractor={item => item.id} />
       </View>
       <BottomBar navigation={navigation} />
     </SafeAreaView>
@@ -94,6 +130,30 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginRight: 20,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingLeft: 6,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
+  },
+  searchButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#ccc',
+    paddingRight: 6,
+  },
+  newsContainer: {
+    flex: 1,
   },
   newsItem: {
     marginBottom: 16,
