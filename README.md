@@ -21,15 +21,24 @@ We aim to centralise information sourcing for university news and discussions in
 
 ## User Stories
 As a student, I want to easily access and view the latest updates and news from various NUS chats and channels in one place, so that I can stay informed about important information such as bus route changes and event updates without feeling overwhelmed.
+
 As a student, I want to be able to safely hold module discussions within the app, facilitating effective communication and collaboration with my classmates.
+
 As a student, I want to seek advice and guidance from seniors who have taken certain modules, leveraging their experience and knowledge.
 As a student, I want a centralized channel within the app where I can communicate and have discussions with my peers and seniors, for both academic and non-academic purposes, in a safe and convenient manner.
+
 As a student, I want to easily and securely find my lost items by accessing a dedicated platform within the app.
+
 As a student, I want the ability to filter and prioritize the NUS chats and channels based on my interests and preferences, so that I can focus on the information that is most relevant to me and avoid being inundated with unnecessary updates.
+
 As a student, I want the app to provide notifications for important updates and announcements from the NUS chats and channels I follow, ensuring that I stay updated even when I'm not actively using the app.
+
 As a student, I want the app to have a user-friendly interface that is easy to navigate and visually appealing, enabling me to quickly find the information I need and enjoy a pleasant user experience.
+
 As a student, I want the app to allow me to customize my profile and personalize my preferences, tailoring the app to my specific needs and interests.
+
 As a student, I want the app to provide a secure and private environment for communication, ensuring that my information is protected and that I can engage in discussions confidently.
+
 As a student, I want the app to offer a feature that enables me to connect with alumni and industry professionals, opening up networking and mentorship opportunities to gain valuable insights for my future career.
 
 ## Features
