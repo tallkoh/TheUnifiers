@@ -40,11 +40,11 @@ Install Expo Go on your mobile phone to preview our app:
 ![Unified App Preview](https://github.com/tallkoh/TheUnifiers/assets/74520346/93ea8cad-9d11-4b4c-837d-8693f6de61a1)
 
 ### Login Page
-![Login Page Preview] (https://github.com/tallkoh/TheUnifiers/assets/110431837/6f821029-af55-40c7-b74e-dd8b1d922fd2)
+![Login Page Preview](https://github.com/tallkoh/TheUnifiers/assets/110431837/6f821029-af55-40c7-b74e-dd8b1d922fd2)
 Users can log in with their username or email. New users can register a new account using the registration button. After successful login, users will be redirected to the home page displaying the news dashboard.
 
 ### Registration Page
-![Registration Page Preview] (https://github.com/tallkoh/TheUnifiers/assets/110431837/0f01a171-5ac2-4bd1-a319-306f074c03e3)
+![Registration Page Preview](https://github.com/tallkoh/TheUnifiers/assets/110431837/0f01a171-5ac2-4bd1-a319-306f074c03e3)
 Users are required to input their desired username and email. Duplicate usernames or emails are not allowed for registration. After successful account creation, users will be redirected to the login page.
 
 There is also a button at the top left of the screen for users to get back to the login page if necessary.
