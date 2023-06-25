@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 0,
     paddingLeft: 6,
   },
   searchInput: {
@@ -154,19 +154,19 @@ const styles = StyleSheet.create({
   },
   newsContainer: {
     flex: 1,
+    margin: 10,
   },
   newsItem: {
     marginBottom: 16,
     alignItems: 'center',
   },
   newsInfoContainer: {
-    width: 400,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    padding: 14,
-    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 20,
+    borderRadius: 40,
   },
   newsTitle: {
-    fontSize: 20,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#fff',
   },

@@ -101,15 +101,12 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    fontColor: '#000',
     marginBottom: 4,
   },
   itemDescription: {
     fontSize: 16,
     marginBottom: 4,
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 
