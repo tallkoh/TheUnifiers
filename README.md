@@ -86,7 +86,7 @@ Module chats facilitate discussions for all available modules in NUS, open to al
 Users can create new module chats if they don't exist using the button on the top right of the screen.
 
 #### Lost and Found
-![Lost and Found Page](https://github.com/tallkoh/TheUnifiers/assets/110431837/d281495e-06cc-4d64-b989-58a447a40419)
+![Lost and Found Page](https://github.com/tallkoh/TheUnifiers/assets/110431837/67a0153b-0472-4452-9974-81916325c13f)
 The Lost and Found feature helps students locate their missing items by browsing listings posted by other students who found items on campus. 
 
 Users can post new items they found using the button on the top right of the screen.
