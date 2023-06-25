@@ -25,6 +25,7 @@ As a student, I want to easily access and view the latest updates and news from 
 As a student, I want to be able to safely hold module discussions within the app, facilitating effective communication and collaboration with my classmates.
 
 As a student, I want to seek advice and guidance from seniors who have taken certain modules, leveraging their experience and knowledge.
+
 As a student, I want a centralized channel within the app where I can communicate and have discussions with my peers and seniors, for both academic and non-academic purposes, in a safe and convenient manner.
 
 As a student, I want to easily and securely find my lost items by accessing a dedicated platform within the app.
