@@ -44,7 +44,7 @@ const LostAndFound = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.listContainer}>
-        <FlatList data={items} renderItem={renderItem} keyExtractor={item => item.id} />
+        <FlatList data={items} renderItem={renderItem} keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()} />
       </View>
       <BottomBar navigation={navigation} />
     </SafeAreaView>

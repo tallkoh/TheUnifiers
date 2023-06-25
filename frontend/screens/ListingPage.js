@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } fr
 import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ListingPage = () => {
   const navigation = useNavigation();
@@ -47,7 +48,7 @@ const ListingPage = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>{'< Back'}</Text>
+        <Ionicons name="arrow-back-outline" size={24} />
       </TouchableOpacity>
       <TouchableOpacity onPress={handleChooseImage}>
         {imageUri ? (
@@ -93,10 +94,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 16,
     left: 16,
-  },
-  backButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   imagePreview: {
     width: 200,
