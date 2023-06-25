@@ -95,6 +95,12 @@ Users can post new items they found using the button on the top right of the scr
 Users will be required to provide a picture, title, description, and location of the found item. 
 
 ## Timeline and Development Plan
+Features to fulfill by Milestone 3:
+Allow users to tap into listings on the lost and found page and chat with the person who has listed the item
+
+Add a search bar to both the chat page and lost and found page
+
+Add a filter for messages in chat pages to make sure no vulgarities or any offensive language will be used
 
 ## Work Log
 Our work log progress can be viewed [here](https://docs.google.com/spreadsheets/d/1evctZxslpMVcKZAfejuWrmujpLc73P-GATx4KaudZrY/edit?usp=sharing).
