@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Keyboard } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 
@@ -74,9 +74,12 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}></View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>      
+      <View style={styles.imageContainer}>
       <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
+      </View>
       <TouchableOpacity activeOpacity={1} onPress={handleInputFocus} style={styles.inputWrapper}>
         <TextInput
           style={styles.input}
@@ -105,7 +108,7 @@ const LoginScreen = () => {
       >
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -117,13 +120,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   imageContainer: {
+    width: '40%',
+    height: '40%',
     marginTop: -120,
-    marginBottom: 20,
+    marginBottom: -20,
     alignItems: 'center',
   },
   image: {
-    width: 200,
-    height: 200,
+    width: '100%',
+    height: '100%',
     resizeMode: 'center',
   },
   inputWrapper: {
