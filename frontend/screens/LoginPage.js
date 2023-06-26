@@ -120,16 +120,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   imageContainer: {
-    width: '40%',
-    height: '40%',
-    marginTop: -120,
-    marginBottom: -20,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'center',
+    width: 200,
+    height: 200,
+    aspectRatio: 1,
+    resizeMode: 'contain',
   },
   inputWrapper: {
     width: '80%',
