@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     padding: 20,
     borderRadius: 40,
+    width: 410,
   },
   newsTitle: {
     fontSize: 13,
