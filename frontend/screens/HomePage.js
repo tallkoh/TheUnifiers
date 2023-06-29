@@ -51,19 +51,39 @@ const HomePage = () => {
       });
   };
 
-  const renderNewsItem = ({ item }) => (
-    <View style={styles.newsItem}>
-      <View style={styles.newsInfoContainer}>
-        <Text style={styles.newsTitle}>{item.message_text}</Text>
+  const renderNewsItem = ({ item }) => {
+    const messageText = item.message_text;
+    const highlightedText = getHighlightedText(messageText, searchText);
+  
+    return (
+      <View style={styles.newsItem}>
+        <View style={styles.newsInfoContainer}>
+          <Text style={styles.newsTitle}>{highlightedText}</Text>
+        </View>
       </View>
-    </View>
-  );
-
+    );
+  };
+  
+  const getHighlightedText = (text, search) => {
+    if (!search || !text.toLowerCase().includes(search.toLowerCase())) {
+      return <Text>{text}</Text>;
+    }
+  
+    const parts = text.split(new RegExp(`(${search})`, 'gi'));
+    const highlightedText = parts.map((part, index) => (
+      <Text key={index} style={part.toLowerCase() === search.toLowerCase() ? styles.highlightedText : null}>
+        {part}
+      </Text>
+    ));
+  
+    return <Text>{highlightedText}</Text>;
+  };
+  
   const handleSearch = () => {
     if (searchText === '') {
       setFilteredNews(news);
     } else {
-      const filtered = news.filter(item =>
+      const filtered = news.filter((item) =>
         item.message_text.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredNews(filtered);
@@ -170,6 +190,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  highlightedText: {
+    fontWeight: 'bold',
+    color: 'yellow',
   },
 });
 

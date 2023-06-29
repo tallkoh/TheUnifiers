@@ -24,8 +24,18 @@ const RegisterScreen = () => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
         saveUserData(user.uid);
-        Alert.prompt('Account successfully registered!', 'Please proceed to login!');
-        navigation.navigate('Login');
+        Alert.alert(
+          'Account successfully registered!',
+          'Please proceed to login!',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.navigate('Login');
+              }
+            }
+          ]
+        );
       })
       .catch(error => alert(error.message));
   };

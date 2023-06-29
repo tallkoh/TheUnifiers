@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../BottomBar';
 import { firestore, auth } from '../firebase';
@@ -106,6 +106,12 @@ const ChatPage = ({ navigation }) => {
   if (currentChat) {
     return (
       <SafeAreaView style={styles.container}>
+        {/* Wrap the content inside KeyboardAvoidingView */}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => setCurrentChat(null)}>
             <Icon name="arrow-back-outline" size={24} style={styles.backButtonIcon} />
@@ -134,6 +140,7 @@ const ChatPage = ({ navigation }) => {
             <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
         </SafeAreaView>
+        </KeyboardAvoidingView>
         <BottomBar navigation={navigation} />
       </SafeAreaView>
     );
