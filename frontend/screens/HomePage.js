@@ -108,10 +108,8 @@ const HomePage = () => {
           value={searchText}
           onChangeText={setSearchText}
           onSubmitEditing={handleSearch}
+          autoCapitalize='none'
         />
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Icon name="search-outline" size={24} color="#333" />
-        </TouchableOpacity>
       </View>
       <View style={styles.newsContainer}>
         <FlatList data={filteredNews} renderItem={renderNewsItem} keyExtractor={item => item.id} />
@@ -165,12 +163,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginRight: 8,
-  },
-  searchButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#ccc',
-    paddingRight: 6,
   },
   newsContainer: {
     flex: 1,
