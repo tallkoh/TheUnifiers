@@ -9,6 +9,8 @@ const ChatPage = ({ navigation }) => {
   const [currentChat, setCurrentChat] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [username, setUsername] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [filteredChats, setFilteredChats] = useState([]);
 
   useEffect(() => {
     const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
@@ -34,6 +36,17 @@ const ChatPage = ({ navigation }) => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (searchText === '') {
+      setFilteredChats(chats);
+    } else {
+      const filtered = chats.filter(chat =>
+        chat.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredChats(filtered);
+    }
+  }, [searchText, chats]);
 
   const handleChatPress = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
@@ -118,6 +131,15 @@ const ChatPage = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
         </View>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search chats..."
+            value={searchText}
+            onChangeText={setSearchText}
+            autoCapitalize='none'
+          />
+        </View>
         <FlatList
           data={currentChat.messages}
           renderItem={renderMessageItem}
@@ -155,8 +177,17 @@ const ChatPage = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search chats..."
+            value={searchText}
+            onChangeText={setSearchText}
+            autoCapitalize='none'
+          />
+        </View>
         <FlatList
-          data={chats.slice().reverse()}
+          data={filteredChats.slice().reverse()}
           renderItem={renderChatItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.messageList}
@@ -176,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
+
     borderBottomColor: '#ccc',
     padding: 16,
   },
@@ -250,46 +281,50 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 12,
-    color: '#999',
+    color: '#666',
     marginBottom: 4,
-  },  
-  hiddenUsername: {
-    height: 0,
-    width: 0,
   },
   messageInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    padding: 8,
   },
   messageInput: {
     flex: 1,
     height: 40,
-    backgroundColor: '#f2f2f2',
-    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 20,
+    paddingHorizontal: 12,
     marginRight: 8,
   },
   sendButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 20,
+    backgroundColor: '#333',
     paddingHorizontal: 16,
     paddingVertical: 8,
+    borderRadius: 20,
   },
   sendButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  chatName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#666',
-    alignSelf: 'center',
-    marginVertical: 8,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 0,
+    paddingLeft: 6,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
   },
 });
 
