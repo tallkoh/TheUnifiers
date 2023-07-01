@@ -119,7 +119,6 @@ const ChatPage = ({ navigation }) => {
   if (currentChat) {
     return (
       <SafeAreaView style={styles.container}>
-        {/* Wrap the content inside KeyboardAvoidingView */}
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -131,7 +130,7 @@ const ChatPage = ({ navigation }) => {
           </TouchableOpacity>
           <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
         </View>
-        <View style={styles.searchContainer}>
+        {/* <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
             placeholder="Search chats..."
@@ -139,7 +138,7 @@ const ChatPage = ({ navigation }) => {
             onChangeText={setSearchText}
             autoCapitalize='none'
           />
-        </View>
+        </View> */}
         <FlatList
           data={currentChat.messages}
           renderItem={renderMessageItem}
@@ -207,7 +206,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
     borderBottomColor: '#ccc',
     padding: 16,
   },
@@ -289,7 +287,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-    padding: 8,
   },
   messageInput: {
     flex: 1,
@@ -301,7 +298,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   sendButton: {
-    backgroundColor: '#333',
+    backgroundColor: '#1e90ff',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,

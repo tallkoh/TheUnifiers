@@ -52,7 +52,7 @@ const LostAndFound = () => {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search"
+          placeholder="Search items..."
           value={searchQuery}
           onChangeText={text => setSearchQuery(text)}
         />

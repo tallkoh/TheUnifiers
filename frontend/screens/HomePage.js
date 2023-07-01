@@ -104,7 +104,7 @@ const HomePage = () => {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search..."
+          placeholder="Search news..."
           value={searchText}
           onChangeText={setSearchText}
           onSubmitEditing={handleSearch}
