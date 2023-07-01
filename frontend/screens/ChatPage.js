@@ -124,43 +124,36 @@ const ChatPage = ({ navigation }) => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => setCurrentChat(null)}>
-            <Icon name="arrow-back-outline" size={24} style={styles.backButtonIcon} />
-          </TouchableOpacity>
-          <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
-        </View>
-        {/* <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search chats..."
-            value={searchText}
-            onChangeText={setSearchText}
-            autoCapitalize='none'
+          <View style={styles.innerHeader}>
+            <TouchableOpacity style={styles.backButton} onPress={() => setCurrentChat(null)}>
+              <Icon name="arrow-back-outline" size={24} style={styles.backButtonIcon} />
+            </TouchableOpacity>
+            <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
+          </View>
+          <FlatList
+            data={currentChat.messages}
+            renderItem={renderMessageItem}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.messageList}
           />
-        </View> */}
-        <FlatList
-          data={currentChat.messages}
-          renderItem={renderMessageItem}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.messageList}
-        />
-        <SafeAreaView style={styles.messageInputContainer}>
-          <TextInput
-            style={styles.messageInput}
-            value={messageText}
-            onChangeText={(text) => setMessageText(text)}
-            placeholder="Type a message..."
-            placeholderTextColor="#999"
-            autoCorrect={false}
-            onSubmitEditing={handleSendMessage}
-            returnKeyType="send"
-            autoCapitalize="none" 
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-            <Text style={styles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+          <SafeAreaView style={styles.messageInputContainer}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.messageInput}
+                value={messageText}
+                onChangeText={(text) => setMessageText(text)}
+                placeholder="Type a message..."
+                placeholderTextColor="#999"
+                autoCorrect={false}
+                onSubmitEditing={handleSendMessage}
+                returnKeyType="send"
+                autoCapitalize="none" 
+              />
+              <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+                <Text style={styles.sendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
         </KeyboardAvoidingView>
         <BottomBar navigation={navigation} />
       </SafeAreaView>
@@ -209,6 +202,13 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     padding: 16,
   },
+  innerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomColor: '#ccc',
+    padding: 8,
+  },
   backButton: {
     marginRight: 8,
   },
@@ -216,13 +216,10 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   createChatButton: {
-    marginRight: -16,
-  },
-  createChatButton: {
     marginLeft: 'auto', 
   },
   pageTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
   },
   pageTitleInner: {
@@ -283,10 +280,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   messageInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
+    marginHorizontal: 6,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 2,
   },
   messageInput: {
     flex: 1,

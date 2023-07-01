@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
     paddingLeft: 10,
-    padding: 16,
+    padding: 14,
     borderBottomColor: '#ccc',
   },
   pageTitle: {
