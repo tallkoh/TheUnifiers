@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { firestore } from '../firebase';
 import BottomBar from '../BottomBar';
@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const LostAndFound = () => {
   const navigation = useNavigation();
   const [items, setItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const unsubscribe = firestore.collection('items').onSnapshot(snapshot => {
@@ -35,6 +36,11 @@ const LostAndFound = () => {
     </View>
   );
 
+  const filteredItems = items.filter(item =>
+    (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -43,14 +49,21 @@ const LostAndFound = () => {
           <Ionicons name="add-circle-outline" size={24} style={styles.createChatButtonIcon} />
         </TouchableOpacity>
       </View>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search"
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+        />
+      </View>
       <View style={styles.listContainer}>
-        <FlatList data={items} renderItem={renderItem} keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()} />
+        <FlatList data={filteredItems} renderItem={renderItem} keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()} />
       </View>
       <BottomBar navigation={navigation} />
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -62,14 +75,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 4,
     paddingLeft: 10,
     padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
   pageTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
   },
   createChatButtonContainer: {
@@ -78,6 +90,21 @@ const styles = StyleSheet.create({
   createChatButtonIcon: {
     color: '#333',
     paddingRight: 8,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 0,
+    paddingLeft: 6,
+  },
+  searchInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
   },
   listContainer: {
     flex: 1,
@@ -107,6 +134,10 @@ const styles = StyleSheet.create({
   itemDescription: {
     fontSize: 16,
     marginBottom: 4,
+  },
+  itemLocation: {
+    fontSize: 14,
+    color: '#888',
   },
 });
 

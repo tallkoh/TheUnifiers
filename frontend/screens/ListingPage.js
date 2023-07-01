@@ -15,7 +15,7 @@ const ListingPage = () => {
   const handleChooseImage = () => {
     launchImageLibrary({ mediaType: 'photo' }, response => {
       if (!response.didCancel && !response.errorCode) {
-        setImageUri(response.uri);
+        setImageUri(response.assets[0].uri);
       }
     });
   };

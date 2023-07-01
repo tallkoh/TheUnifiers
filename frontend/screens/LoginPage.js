@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Keyboard, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image, Keyboard, KeyboardAvoidingView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 
@@ -34,7 +34,7 @@ const LoginScreen = () => {
             .get()
             .then(querySnapshot => {
               if (querySnapshot.empty) {
-                console.log('User not found!');
+                Alert.alert('User Not Found', 'Please check your email/username and try again.');
               } else {
                 const userDoc = querySnapshot.docs[0];
                 const userData = userDoc.data();
@@ -76,9 +76,9 @@ const LoginScreen = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>      
+      style={styles.container}>
       <View style={styles.imageContainer}>
-      <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
+        <Image source={require('../assets/logo_transparent.png')} style={styles.image} />
       </View>
       <TouchableOpacity activeOpacity={1} onPress={handleInputFocus} style={styles.inputWrapper}>
         <TextInput
