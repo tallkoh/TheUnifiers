@@ -18,7 +18,18 @@ const HomePage = () => {
       try {
         const newsRef = firestore.collection('news');
         const snapshot = await newsRef.get();
-        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text }));
+        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_id: doc.data().channel_id, channel_name: '' }));
+
+        for (const news of newsData) {
+          const channelRef = firestore.collection('channels').doc(news.channel_id);
+          const channelDoc = await channelRef.get();
+  
+          if (channelDoc.exists) {
+            news.channel_name = channelDoc.data().channel_name; // update channel_name for each news object
+          } else {
+            news.channel_name = 'Unknown';
+          }
+        }
         setNews(newsData);
       } catch (error) {
         console.log('Error fetching news:', error);
@@ -53,12 +64,16 @@ const HomePage = () => {
 
   const renderNewsItem = ({ item }) => {
     const messageText = item.message_text;
+    const channelName = item.channel_name;
     const highlightedText = getHighlightedText(messageText, searchText);
   
     return (
       <View style={styles.newsItem}>
+        <View style={styles.newsHeader}> 
+          <Text style={styles.newsChannel}>{channelName}</Text>
+        </View>
         <View style={styles.newsInfoContainer}>
-          <Text style={styles.newsTitle}>{highlightedText}</Text>
+          <Text style={styles.newsMessage}>{highlightedText}</Text>
         </View>
       </View>
     );
@@ -172,13 +187,20 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
   },
+  newsHeader: {
+    alignItems: 'left',
+  },
+  newsChannel: {
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
   newsInfoContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     padding: 20,
     borderRadius: 40,
     width: '100%',
   },
-  newsTitle: {
+  newsMessage: {
     fontSize: 13,
     fontWeight: 'bold',
     color: '#fff',
