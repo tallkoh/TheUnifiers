@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../BottomBar';
@@ -11,6 +11,7 @@ const ChatPage = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [searchText, setSearchText] = useState('');
   const [filteredChats, setFilteredChats] = useState([]);
+  const flatListRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
@@ -57,25 +58,28 @@ const ChatPage = ({ navigation }) => {
     if (!currentChat || messageText.trim() === '') {
       return;
     }
-  
+
     const newMessage = {
-      username: username, 
+      username: username,
       message: messageText.trim(),
     };
     setMessageText('');
-  
+
     const updatedMessages = [...currentChat.messages, newMessage];
-  
+
     await firestore.collection('chats').doc(currentChat.id).update({
       messages: updatedMessages,
     });
-  
+
     setCurrentChat(prevChat => ({
       ...prevChat,
       messages: updatedMessages,
     }));
+
+    // Scroll to the last message
+    flatListRef.current.scrollToEnd();
   };
-  
+
   const handleCreateChat = () => {
     Alert.prompt(
       'Create New Chat',
@@ -105,7 +109,7 @@ const ChatPage = ({ navigation }) => {
     const itemStyle = isSentByCurrentUser
       ? styles.sentMessageItem
       : styles.receivedMessageItem;
-  
+
     return (
       <View style={[styles.messageItemContainer, containerStyle]}>
         <View style={styles.messageItem}>
@@ -131,12 +135,15 @@ const ChatPage = ({ navigation }) => {
             <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
           </View>
           <FlatList
+            ref={flatListRef}
             data={currentChat.messages}
             renderItem={renderMessageItem}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.messageList}
+            onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: true })}
+            onLayout={() => flatListRef.current.scrollToEnd({ animated: true })}
           />
-          <SafeAreaView style={styles.messageInputContainer}>
+          <View style={styles.messageInputContainer}>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.messageInput}
@@ -146,14 +153,15 @@ const ChatPage = ({ navigation }) => {
                 placeholderTextColor="#999"
                 autoCorrect={false}
                 onSubmitEditing={handleSendMessage}
-                returnKeyType="send"
-                autoCapitalize="none" 
+                multiline={true}
+                returnKeyType="default"
+                autoCapitalize="none"
               />
               <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
                 <Text style={styles.sendButtonText}>Send</Text>
               </TouchableOpacity>
             </View>
-          </SafeAreaView>
+          </View>
         </KeyboardAvoidingView>
         <BottomBar navigation={navigation} />
       </SafeAreaView>
@@ -281,8 +289,10 @@ const styles = StyleSheet.create({
   },
   messageInputContainer: {
     borderTopWidth: 1,
+    padding: 3,
     borderTopColor: '#ccc',
-    marginHorizontal: 6,
+    marginHorizontal: 4,
+    alignItems: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -291,12 +301,15 @@ const styles = StyleSheet.create({
   },
   messageInput: {
     flex: 1,
-    height: 40,
+    height: '100%',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 20,
     paddingHorizontal: 12,
     marginRight: 8,
+    paddingTop: 6,
+    paddingBottom: 4,
+    textAlignVertical: 'auto',
   },
   sendButton: {
     backgroundColor: '#1e90ff',
