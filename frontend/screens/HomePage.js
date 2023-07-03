@@ -16,20 +16,9 @@ const HomePage = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const newsRef = firestore.collection('news');
+        const newsRef = firestore.collection('news').orderBy('timestamp', 'desc');
         const snapshot = await newsRef.get();
-        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_id: doc.data().channel_id, channel_name: '' }));
-
-        for (const news of newsData) {
-          const channelRef = firestore.collection('channels').doc(news.channel_id);
-          const channelDoc = await channelRef.get();
-  
-          if (channelDoc.exists) {
-            news.channel_name = channelDoc.data().channel_name; // update channel_name for each news object
-          } else {
-            news.channel_name = 'Unknown';
-          }
-        }
+        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_name: doc.data().channel_name, timestamp: doc.data().timestamp.toDate() }));
         setNews(newsData);
       } catch (error) {
         console.log('Error fetching news:', error);
@@ -66,11 +55,13 @@ const HomePage = () => {
     const messageText = item.message_text;
     const channelName = item.channel_name;
     const highlightedText = getHighlightedText(messageText, searchText);
+    const timestamp = item.timestamp.toLocaleString();
   
     return (
       <View style={styles.newsItem}>
         <View style={styles.newsHeader}> 
           <Text style={styles.newsChannel}>{channelName}</Text>
+          <Text style={styles.newsTimestamp}>{timestamp}</Text>
         </View>
         <View style={styles.newsInfoContainer}>
           <Text style={styles.newsMessage}>{highlightedText}</Text>
