@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 12,
     marginRight: 8,
-    paddingTop: 6,
+    paddingTop: 4,
     paddingBottom: 4,
     textAlignVertical: 'auto',
   },

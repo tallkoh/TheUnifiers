@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   newsInfoContainer: {
-    marginBottom: 10,
+    marginBottom: 2,
   },
   newsMessage: {
     fontSize: 14,
