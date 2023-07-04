@@ -109,6 +109,7 @@ const HomePage = () => {
       <View style={styles.newsItem}>
         <View style={styles.newsHeader}> 
           <Text style={styles.newsChannel}>{channelName}</Text>
+          <Text style={styles.newsTimestamp}>{timestamp}</Text>
         </View>
         <View style={styles.newsInfoContainer}>
           <Text style={styles.newsMessage}>{highlightedText}</Text>
