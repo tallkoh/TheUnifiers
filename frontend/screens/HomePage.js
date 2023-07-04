@@ -1,36 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 import logo from '../assets/logo_transparent_notext.jpeg';
 import logoText from '../assets/logo_transparent_onlytext.jpeg';
 import BottomBar from '../BottomBar';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const HomePage = () => {
   const navigation = useNavigation();
   const [news, setNews] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filteredNews, setFilteredNews] = useState([]);
+  const [showAllChats, setShowAllChats] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [channelOptions, setChannelOptions] = useState([]);
+  const [selectedChannels, setSelectedChannels] = useState([]);
+  const [channelOptionsFetched, setChannelOptionsFetched] = useState(false);
+  const [tempSelectedChannels, setTempSelectedChannels] = useState([]);
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const newsRef = firestore.collection('news');
+        const newsRef = firestore.collection('news').orderBy('timestamp', 'desc');
         const snapshot = await newsRef.get();
-        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_id: doc.data().channel_id, channel_name: '' }));
-
-        for (const news of newsData) {
-          const channelRef = firestore.collection('channels').doc(news.channel_id);
-          const channelDoc = await channelRef.get();
-  
-          if (channelDoc.exists) {
-            news.channel_name = channelDoc.data().channel_name; // update channel_name for each news object
-          } else {
-            news.channel_name = 'Unknown';
-          }
-        }
+        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_name: doc.data().channel_name, timestamp: doc.data().timestamp.toDate() }));
         setNews(newsData);
+        setFilteredNews(newsData);
       } catch (error) {
         console.log('Error fetching news:', error);
       }
@@ -38,6 +35,31 @@ const HomePage = () => {
 
     fetchNews();
   }, []);
+  
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const channelRef = firestore.collection('channels');
+        const snapshot = await channelRef.get();
+        const channelData = snapshot.docs.map(doc => doc.data().channel_name);
+        setChannelOptions(channelData);
+        setChannelOptionsFetched(true);
+      } catch (error) {
+        console.log('Error fetching channels:', error);
+      }
+    };
+
+    fetchChannels();
+  }, []);
+  useEffect(() => {
+    if (channelOptionsFetched) {
+      // Set initial selected channels to all available channels
+      const allChannels = [...channelOptions];
+      setSelectedChannels(allChannels);
+      setTempSelectedChannels(allChannels);
+    }
+  }, [channelOptionsFetched]);
+  
 
   useEffect(() => {
     if (searchText === '') {
@@ -50,6 +72,21 @@ const HomePage = () => {
     }
   }, [searchText, news]);
 
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const channelRef = firestore.collection('channels');
+        const snapshot = await channelRef.get();
+        const channelData = snapshot.docs.map(doc => doc.data().channel_name);
+        setChannelOptions(channelData);
+      } catch (error) {
+        console.log('Error fetching channels:', error);
+      }
+    };
+  
+    fetchChannels();
+  }, []);
+  
   const handleLogout = () => {
     auth
       .signOut()
@@ -66,6 +103,7 @@ const HomePage = () => {
     const messageText = item.message_text;
     const channelName = item.channel_name;
     const highlightedText = getHighlightedText(messageText, searchText);
+    const timestamp = item.timestamp.toLocaleString();
   
     return (
       <View style={styles.newsItem}>
@@ -74,10 +112,12 @@ const HomePage = () => {
         </View>
         <View style={styles.newsInfoContainer}>
           <Text style={styles.newsMessage}>{highlightedText}</Text>
+          <Text style={styles.newsTimestamp}>{timestamp}</Text>
         </View>
       </View>
     );
   };
+  
   
   const getHighlightedText = (text, search) => {
     if (!search || !text.toLowerCase().includes(search.toLowerCase())) {
@@ -85,24 +125,44 @@ const HomePage = () => {
     }
   
     const parts = text.split(new RegExp(`(${search})`, 'gi'));
-    const highlightedText = parts.map((part, index) => (
-      <Text key={index} style={part.toLowerCase() === search.toLowerCase() ? styles.highlightedText : null}>
-        {part}
+    return (
+      <Text>
+        {parts.map((part, i) =>
+          part.toLowerCase() === search.toLowerCase() ? (
+            <Text key={i} style={styles.highlightedText}>
+              {part}
+            </Text>
+          ) : (
+            part
+          )
+        )}
       </Text>
-    ));
-  
-    return <Text>{highlightedText}</Text>;
+    );
   };
   
-  const handleSearch = () => {
-    if (searchText === '') {
+  const handleFilter = () => {
+    setShowAllChats(selectedChannels.length === 0);
+
+    if (modalVisible) {
+      // Closing the modal, no need to update the selected channels
+      setModalVisible(false);
+    } else {
+      // Opening the modal, update the tempSelectedChannels to the current selected channels
+      setTempSelectedChannels(selectedChannels);
+      setModalVisible(true);
+    }
+  };
+  
+  const applyFilter = () => {
+    setSelectedChannels(tempSelectedChannels);
+    setShowAllChats(tempSelectedChannels.length === 0);
+    if (tempSelectedChannels.length === 0) {
       setFilteredNews(news);
     } else {
-      const filtered = news.filter((item) =>
-        item.message_text.toLowerCase().includes(searchText.toLowerCase())
-      );
+      const filtered = news.filter(item => tempSelectedChannels.includes(item.channel_name));
       setFilteredNews(filtered);
     }
+    setModalVisible(false);
   };
 
   return (
@@ -116,19 +176,71 @@ const HomePage = () => {
           <Icon name="log-out-outline" size={28} color="#333" />
         </TouchableOpacity>
       </View>
-      <View style={styles.searchContainer}>
+      <View style={styles.searchBarContainer}>
         <TextInput
-          style={styles.searchInput}
-          placeholder="Search news..."
+          style={styles.searchBar}
+          placeholder="Search..."
           value={searchText}
-          onChangeText={setSearchText}
-          onSubmitEditing={handleSearch}
+          onChangeText={text => setSearchText(text)}
           autoCapitalize='none'
         />
+        <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
+          <Icon name="filter" size={25} color="#ffffff" />
+        </TouchableOpacity>
       </View>
-      <View style={styles.newsContainer}>
-        <FlatList data={filteredNews} renderItem={renderNewsItem} keyExtractor={item => item.id} />
-      </View>
+      <FlatList
+        style={styles.newsList}
+        data={filteredNews}
+        renderItem={renderNewsItem}
+        keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}
+      />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Channels</Text>
+            <View style={styles.channelList}>
+              {channelOptions.map(channel => (
+                <TouchableOpacity
+                  key={channel}
+                  style={[
+                    styles.channelOption,
+                    tempSelectedChannels.includes(channel) && styles.channelOptionSelected,
+                  ]}
+                  onPress={() => {
+                    const updatedChannels = tempSelectedChannels.includes(channel)
+                      ? tempSelectedChannels.filter(c => c !== channel)
+                      : [...tempSelectedChannels, channel];
+                    setTempSelectedChannels(updatedChannels);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.channelOptionText,
+                      tempSelectedChannels.includes(channel) && styles.channelOptionTextSelected,
+                    ]}
+                  >
+                    {channel}
+                  </Text>
+                  {tempSelectedChannels.includes(channel) ? (
+                    <AntDesign name="checkcircle" size={20} color="#009688" />
+                  ) : (
+                    <AntDesign name="checkcircleo" size={20} color="#9e9e9e" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
+              <Text style={styles.applyButtonText}>Apply</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <BottomBar navigation={navigation} />
     </SafeAreaView>
   );
@@ -137,9 +249,7 @@ const HomePage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-    marginTop: -5,
+    backgroundColor: '#ffffff',
   },
   headerContainer: {
     flexDirection: 'row',
@@ -164,50 +274,113 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginRight: 20,
   },
-  searchContainer: {
+  searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 0,
-    paddingLeft: 6,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
-  searchInput: {
+  searchBar: {
     flex: 1,
+    height: 40,
     borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 8,
+    borderColor: '#999999',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    marginRight: 10,
   },
-  newsContainer: {
+  filterButton: {
+    backgroundColor: '#009688',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  newsList: {
     flex: 1,
-    margin: 10,
+    paddingHorizontal: 10,
   },
   newsItem: {
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  newsHeader: {
-    alignItems: 'left',
-  },
-  newsChannel: {
-    fontSize: 17,
-    fontWeight: 'bold',
+    backgroundColor: '#f5f5f5',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 10,
   },
   newsInfoContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    padding: 20,
-    borderRadius: 40,
-    width: '100%',
+    marginBottom: 10,
   },
   newsMessage: {
-    fontSize: 13,
+    fontSize: 14,
+    color: '#555555',
+  },
+  newsFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  newsChannel: {
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#444444',
+  },
+  newsTimestamp: {
+    fontSize: 12,
+    color: '#999999',
+    alignSelf: 'flex-end',
   },
   highlightedText: {
+    backgroundColor: '#ffff00',
     fontWeight: 'bold',
-    color: 'yellow',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  channelList: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  channelOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  channelOptionSelected: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 5,
+  },
+  channelOptionText: {
+    marginLeft: 5,
+    marginRight: 'auto',
+  },
+  channelOptionTextSelected: {
+    fontWeight: 'bold',
+    color: '#009688',
+  },
+  applyButton: {
+    backgroundColor: '#009688',
+    borderRadius: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  applyButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
   },
 });
 
