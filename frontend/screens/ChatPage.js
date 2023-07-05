@@ -16,10 +16,10 @@ const ChatPage = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
       const updatedChats = snapshot.docs.map(doc => {
-        const { title, messages } = doc.data();
+        const { moduleCode, messages } = doc.data();
         return {
           id: doc.id,
-          title,
+          moduleCode,
           messages,
         };
       });
@@ -43,7 +43,7 @@ const ChatPage = ({ navigation }) => {
       setFilteredChats(chats);
     } else {
       const filtered = chats.filter(chat =>
-        chat.title.toLowerCase().includes(searchText.toLowerCase())
+        chat.moduleCode && chat.moduleCode.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredChats(filtered);
     }
@@ -80,24 +80,24 @@ const ChatPage = ({ navigation }) => {
     flatListRef.current.scrollToEnd();
   };
 
-  const handleCreateChat = () => {
-    Alert.prompt(
-      'Create New Chat',
-      'Enter the chat name:',
-      (chatName) => {
-        if (chatName.trim() !== '') {
-          firestore.collection('chats').add({
-            title: chatName.trim(),
-            messages: [],
-          });
-        }
-      }
-    );
-  };
+  // const handleCreateChat = () => {
+  //   Alert.prompt(
+  //     'Create New Chat',
+  //     'Enter the chat name:',
+  //     (chatName) => {
+  //       if (chatName.trim() !== '') {
+  //         firestore.collection('chats').add({
+  //           title: chatName.trim(),
+  //           messages: [],
+  //         });
+  //       }
+  //     }
+  //   );
+  // };
 
   const renderChatItem = ({ item }) => (
     <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.id)}>
-      <Text style={styles.chatTitle}>{item.title}</Text>
+      <Text style={styles.chatTitle}>{item.moduleCode}</Text>
     </TouchableOpacity>
   );
 
@@ -132,9 +132,9 @@ const ChatPage = ({ navigation }) => {
             <TouchableOpacity style={styles.backButton} onPress={() => setCurrentChat(null)}>
               <Icon name="arrow-back-outline" size={24} style={styles.backButtonIcon} />
             </TouchableOpacity>
-            <Text style={styles.pageTitleInner}>{currentChat.title}</Text>
+            <Text style={styles.pageTitleInner}>{currentChat.moduleCode}</Text>
           </View>
-          <FlatList
+            <FlatList
             ref={flatListRef}
             data={currentChat.messages}
             renderItem={renderMessageItem}
@@ -142,7 +142,7 @@ const ChatPage = ({ navigation }) => {
             contentContainerStyle={styles.messageList}
             onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: true })}
             onLayout={() => flatListRef.current.scrollToEnd({ animated: true })}
-          />
+            />
           <View style={styles.messageInputContainer}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -172,9 +172,9 @@ const ChatPage = ({ navigation }) => {
         <View style={styles.header}>
           <Text style={styles.pageTitle}>Chats</Text>
           <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleCreateChat}>
+            {/* <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleCreateChat}>
               <Icon name="create-outline" size={24} style={styles.createChatButtonIcon} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         <View style={styles.searchContainer}>
