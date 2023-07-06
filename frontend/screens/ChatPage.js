@@ -12,7 +12,7 @@ const ChatPage = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [filteredChats, setFilteredChats] = useState([]);
   const flatListRef = useRef(null);
-
+  const currentChatMessages = currentChat?.messages || [];
   useEffect(() => {
     const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
       const updatedChats = snapshot.docs.map(doc => {
@@ -77,7 +77,9 @@ const ChatPage = ({ navigation }) => {
     }));
 
     // Scroll to the last message
-    flatListRef.current.scrollToEnd();
+    if (currentChatMessages.length > 0){
+      flatListRef.current.scrollToEnd();
+    }
   };
 
   // const handleCreateChat = () => {
@@ -134,15 +136,23 @@ const ChatPage = ({ navigation }) => {
             </TouchableOpacity>
             <Text style={styles.pageTitleInner}>{currentChat.moduleCode}</Text>
           </View>
-            <FlatList
+          <FlatList
             ref={flatListRef}
-            data={currentChat.messages}
+            data={currentChatMessages}
             renderItem={renderMessageItem}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => `${item.id}-${index}`} // Unique key for each message item
             contentContainerStyle={styles.messageList}
-            onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: true })}
-            onLayout={() => flatListRef.current.scrollToEnd({ animated: true })}
-            />
+            onContentSizeChange={() => {
+              if (currentChatMessages.length > 0) {
+                flatListRef.current.scrollToEnd({ animated: true });
+              }
+            }}
+            onLayout={() => {
+              if (currentChatMessages.length > 0) {
+                flatListRef.current.scrollToEnd({ animated: true });
+              }
+            }}
+          />
           <View style={styles.messageInputContainer}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -171,11 +181,7 @@ const ChatPage = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.pageTitle}>Chats</Text>
-          <View style={styles.headerContent}>
-            {/* <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleCreateChat}>
-              <Icon name="create-outline" size={24} style={styles.createChatButtonIcon} />
-            </TouchableOpacity> */}
-          </View>
+          <View style={styles.headerContent} />
         </View>
         <View style={styles.searchContainer}>
           <TextInput
