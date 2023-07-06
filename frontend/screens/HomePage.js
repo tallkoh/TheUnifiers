@@ -106,7 +106,7 @@ const HomePage = () => {
     const timestamp = item.timestamp.toLocaleString();
   
     return (
-      <View style={styles.newsItem}>
+      <View key={`${item.id}-${item.channel_name}`} style={styles.newsItem}>
         <View style={styles.newsHeader}> 
           <Text style={styles.newsChannel}>{channelName}</Text>
         </View>
@@ -192,7 +192,7 @@ const HomePage = () => {
         style={styles.newsList}
         data={filteredNews}
         renderItem={renderNewsItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => `${item.id}-${item.channel_name}`}
         showsVerticalScrollIndicator={false}
       />
       <Modal

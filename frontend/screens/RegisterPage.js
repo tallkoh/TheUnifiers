@@ -5,46 +5,37 @@ import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 
 const RegisterScreen = () => {
+  const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
-  const navigation = useNavigation();
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-
+  
     auth
       .createUserWithEmailAndPassword(email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
         saveUserData(user.uid);
-        Alert.alert(
-          'Account successfully registered!',
-          'Please proceed to login!',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.navigate('Login');
-              }
-            }
-          ]
-        );
+        navigation.navigate('Login');
       })
       .catch(error => alert(error.message));
   };
 
-  const saveUserData = (userId) => {
-    firestore.collection('users').doc(userId).set({
-      username: username,
-      email: email,
-    })
+  const saveUserData = userId => {
+    firestore
+      .collection('users')
+      .doc(userId)
+      .set({
+        username: username,
+        email: email,
+      })
       .then(() => {
         console.log('User data saved successfully!');
       })
@@ -116,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: 16,
   },
-  content: {
+content: {
     flex: 15,
     paddingBottom: 78,
     justifyContent: 'center',

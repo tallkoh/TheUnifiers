@@ -312,10 +312,9 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 20,
     paddingHorizontal: 12,
-    marginRight: 8,
-    paddingTop: 4,
-    paddingBottom: 4,
-    textAlignVertical: 'auto',
+    marginRight: 6,
+    padding: 2,
+    textAlignVertical: 'center',
   },
   sendButton: {
     backgroundColor: '#1e90ff',
