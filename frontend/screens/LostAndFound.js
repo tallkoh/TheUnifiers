@@ -43,7 +43,7 @@ const LostAndFound = () => {
       <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
       <View style={styles.itemInfoContainer}>
         <Text style={styles.itemName}>{item.itemName}</Text>
-        <Text style={styles.itemDescription}>Descrription: {item.description}</Text>
+        <Text style={styles.itemDescription}>Description: {item.description}</Text>
         <Text style={styles.itemLocation}>Location: {item.location}</Text>
         {item.username && (
           <Text style={styles.itemUsername}>
@@ -56,7 +56,7 @@ const LostAndFound = () => {
   
 
   const filteredItems = items.filter(item =>
-    (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (item.itemName && item.itemName.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 2,
     paddingLeft: 6,
   },
   searchInput: {
@@ -156,6 +156,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   toggleContainer: {
+    marginLeft: 6,
+    marginRight: 6,
     flexDirection: 'row',
     marginBottom: 8,
   },
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   activeToggleButton: {
-    backgroundColor: '#1e90ff',
+    backgroundColor: '#009688',
   },
   activeToggleButtonText: {
     color: '#fff',
