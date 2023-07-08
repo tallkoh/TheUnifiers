@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-picker';
-import { firestore } from '../firebase';
+import { firestore, auth } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -22,27 +22,34 @@ const ListingPage = () => {
   };
 
   const handleAddItem = async () => {
+    const user = await firestore.collection('users').doc(auth.currentUser.uid).get();
+    const userData = user.data();
+    const username = userData.username;
+    
     try {
       const newItem = {
         image: imageUri,
         itemName: itemName,
         description: description,
         location: location,
+        username: username,
       };
-
+  
       // Store the new item in Firestore
       await firestore.collection('items').add(newItem);
-
+  
       // Reset the form fields
       setImageUri(null);
       setItemName('');
       setDescription('');
       setLocation('');
-
+  
       // Navigate back to the LostAndFound page
       navigation.goBack();
     } catch (error) {
-      console.log('Error adding item:', error);
+      console.log('Error adding item:', error); // Log the error for debugging
+      // Display an error message to the user
+      // You can use a state variable to show the error message in the UI
     }
   };
 

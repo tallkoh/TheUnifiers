@@ -106,7 +106,7 @@ const HomePage = () => {
     const timestamp = item.timestamp.toLocaleString();
   
     return (
-      <View key={`${item.id}-${item.channel_name}`} style={styles.newsItem}>
+      <View key={`${item.id}-${item.timestamp.getTime()}`} style={styles.newsItem}>
         <View style={styles.newsHeader}> 
           <Text style={styles.newsChannel}>{channelName}</Text>
         </View>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { firestore } from '../firebase';
+import { firestore, auth } from '../firebase';
 import BottomBar from '../BottomBar';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -9,11 +9,24 @@ const LostAndFound = () => {
   const navigation = useNavigation();
   const [items, setItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMyListings, setShowMyListings] = useState(false); // State to toggle between All Listings and My Listings
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const unsubscribe = firestore.collection('items').onSnapshot(snapshot => {
       const itemsData = snapshot.docs.map(doc => doc.data());
       setItems(itemsData);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = firestore.collection('users').doc(auth.currentUser.uid).onSnapshot(snapshot => {
+      const userData = snapshot.data();
+      setUsername(userData.username);
     });
 
     return () => {
@@ -29,17 +42,31 @@ const LostAndFound = () => {
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
       <View style={styles.itemInfoContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDescription}>{item.description}</Text>
+        <Text style={styles.itemName}>{item.itemName}</Text>
+        <Text style={styles.itemDescription}>Descrription: {item.description}</Text>
         <Text style={styles.itemLocation}>Location: {item.location}</Text>
+        {item.username && (
+          <Text style={styles.itemUsername}>
+            Posted By: <Text style={styles.usernameText}>{item.username}</Text>
+          </Text>
+        )}
       </View>
     </View>
   );
+  
 
   const filteredItems = items.filter(item =>
     (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const myItems = filteredItems.filter(item => item.username === username);
+
+  const displayedItems = showMyListings ? myItems : filteredItems;
+
+  const handleToggleListings = () => {
+    setShowMyListings(prevState => !prevState);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,8 +84,30 @@ const LostAndFound = () => {
           onChangeText={text => setSearchQuery(text)}
         />
       </View>
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[styles.toggleButton, !showMyListings && styles.activeToggleButton]}
+          onPress={handleToggleListings}
+        >
+          <Text style={[styles.toggleButtonText, !showMyListings && styles.activeToggleButtonText]}>
+            All Listings
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.toggleButton, showMyListings && styles.activeToggleButton]}
+          onPress={handleToggleListings}
+        >
+          <Text style={[styles.toggleButtonText, showMyListings && styles.activeToggleButtonText]}>
+            My Listings
+          </Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.listContainer}>
-        <FlatList data={filteredItems} renderItem={renderItem} keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()} />
+        <FlatList
+          data={displayedItems}
+          renderItem={renderItem}
+          keyExtractor={item => item.id ? item.id.toString() : Math.random().toString()}
+        />
       </View>
       <BottomBar navigation={navigation} />
     </SafeAreaView>
@@ -94,7 +143,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 0,
+    marginBottom: 6,
     paddingLeft: 6,
   },
   searchInput: {
@@ -105,6 +154,28 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginRight: 8,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  toggleButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#eee',
+  },
+  toggleButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  activeToggleButton: {
+    backgroundColor: '#1e90ff',
+  },
+  activeToggleButtonText: {
+    color: '#fff',
   },
   listContainer: {
     flex: 1,
@@ -125,19 +196,27 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 8,
   },
-  itemTitle: {
-    fontSize: 18,
+  itemName: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
     marginBottom: 4,
   },
   itemDescription: {
-    fontSize: 16,
-    marginBottom: 4,
+    fontSize: 14,
+    color: '#888',
+  
   },
   itemLocation: {
     fontSize: 14,
     color: '#888',
+  },
+  itemUsername: {
+    fontSize: 14,
+    color: '#888',
+  },
+  usernameText: {
+    fontWeight: 'normal',
   },
 });
 
