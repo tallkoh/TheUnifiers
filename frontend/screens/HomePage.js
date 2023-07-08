@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
+import axios from 'axios';
 import logo from '../assets/logo_transparent_notext.jpeg';
 import logoText from '../assets/logo_transparent_onlytext.jpeg';
 import BottomBar from '../BottomBar';
@@ -19,6 +20,8 @@ const HomePage = () => {
   const [selectedChannels, setSelectedChannels] = useState([]);
   const [channelOptionsFetched, setChannelOptionsFetched] = useState(false);
   const [tempSelectedChannels, setTempSelectedChannels] = useState([]);
+  const [addChannelPop, setAddChannelPop] = useState(false);
+  const [channelUsername, setChannelUsername] = useState('');
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -165,6 +168,22 @@ const HomePage = () => {
     setModalVisible(false);
   };
 
+  const handleSubmitUsername = async () => {
+    try {
+      const response = await axios.post(`https://uni-backend.onrender.com/channels/${channelUsername}`);
+      // Handle the response as needed
+      console.log(response.data);
+      // Reset the input
+      setChannelUsername('');
+      // Close the popup
+      setAddChannelPop(false);
+    } catch (error) {
+      // Handle error if request fails
+      console.error(error);
+      Alert.alert('Error', 'Failed to submit channel username.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -184,6 +203,9 @@ const HomePage = () => {
           onChangeText={text => setSearchText(text)}
           autoCapitalize='none'
         />
+        <TouchableOpacity style={styles.filterButton} onPress={() => setAddChannelPop(true)}>
+          <Icon name="add" size={25} color="#ffffff" />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
           <Icon name="filter" size={25} color="#ffffff" />
         </TouchableOpacity>
@@ -195,6 +217,30 @@ const HomePage = () => {
         keyExtractor={item => `${item.id}-${item.channel_name}`}
         showsVerticalScrollIndicator={false}
       />
+      <Modal visible={addChannelPop} 
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setAddChannelPop(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitleSubmit}>Add Channel</Text>
+                <TouchableOpacity style={styles.closeButton} onPress={() => setAddChannelPop(false)}>
+                  <Icon name="close" size={25} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Channel Username"
+              value={channelUsername}
+              onChangeText={(text) => setChannelUsername(text)}
+            />
+            <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
+              <Text style={styles.applyButtonText}>Submit</Text>
+            </TouchableOpacity>
+            </View>
+          </View>
+      </Modal>
       <Modal
         animationType="slide"
         transparent={true}
@@ -296,6 +342,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 3,
   },
   newsList: {
     flex: 1,
@@ -333,11 +380,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffff00',
     fontWeight: 'bold',
   },
+  input: {
+    height: 40,
+    borderBottomWidth: 1,
+    borderColor: '#999999',
+    paddingHorizontal: 15,
+    width: '70%'
+  },
+  closeButton: {
+    backgroundColor: '#009688',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   modalContent: {
     backgroundColor: '#ffffff',
@@ -345,6 +414,13 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '80%',
     alignItems: 'center',
+  },
+  modalTitleSubmit: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   modalTitle: {
     fontSize: 18,
@@ -375,6 +451,7 @@ const styles = StyleSheet.create({
   applyButton: {
     backgroundColor: '#009688',
     borderRadius: 5,
+    marginTop: 10,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
