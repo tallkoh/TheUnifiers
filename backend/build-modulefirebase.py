@@ -5,7 +5,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('./the-unifiers-firebase-adminsdk-vzs1p-06f0a83999.json')  # Replace with your actual JSON file path
+cred = credentials.Certificate('./unified-acf08-firebase-adminsdk-xytc6-0f7c8f724e.json')  # Replace with your actual JSON file path
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
