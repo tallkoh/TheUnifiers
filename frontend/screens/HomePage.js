@@ -224,7 +224,7 @@ const HomePage = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitleSubmit}>Add Channel</Text>
+                <Text style={styles.modalTitleSubmit}>Add New Channel</Text>
                 <TouchableOpacity style={styles.closeButton} onPress={() => setAddChannelPop(false)}>
                   <Icon name="close" size={25} color="#fff" />
                 </TouchableOpacity>
@@ -233,7 +233,15 @@ const HomePage = () => {
               style={styles.input}
               placeholder="Enter Channel Username"
               value={channelUsername}
-              onChangeText={(text) => setChannelUsername(text)}
+              autoCapitalize="none"
+              onChangeText={(text) => {
+                const trimmedText = text.trim();
+                const regex = /^[a-zA-Z0-9_]*$/;
+
+                if (regex.test(trimmedText)) {
+                  setChannelUsername(trimmedText);
+                }
+              }}
             />
             <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
               <Text style={styles.applyButtonText}>Submit</Text>
