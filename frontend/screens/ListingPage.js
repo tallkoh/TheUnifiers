@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import ImagePicker from 'react-native-image-picker';
 import { firestore, auth } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -12,6 +11,7 @@ const ListingPage = () => {
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [teleHandle, setTeleHandle] = useState('');
 
   const handleChooseImage = () => {
     launchImageLibrary({ mediaType: 'photo' }, response => {
@@ -32,6 +32,7 @@ const ListingPage = () => {
         itemName: itemName,
         description: description,
         location: location,
+        teleHandle: teleHandle,
         username: username,
       };
   
@@ -70,6 +71,7 @@ const ListingPage = () => {
         placeholder="Item Name"
         value={itemName}
         onChangeText={text => setItemName(text)}
+        autoCapitalize='none'
       />
       <TextInput
         style={styles.input}
@@ -78,12 +80,21 @@ const ListingPage = () => {
         numberOfLines={4}
         value={description}
         onChangeText={text => setDescription(text)}
+        autoCapitalize='none'
       />
       <TextInput
         style={styles.input}
         placeholder="Location"
         value={location}
         onChangeText={text => setLocation(text)}
+        autoCapitalize='none'
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Tele Handle"
+        value={teleHandle}
+        onChangeText={text => setTeleHandle(text)}
+        autoCapitalize='none'
       />
       <Button title="Add Item" onPress={handleAddItem} />
     </View>

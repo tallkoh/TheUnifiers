@@ -323,16 +323,16 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 7,
     marginBottom: 10,
   },
   searchBar: {
     flex: 1,
-    height: 40,
+    height: '100%',
     borderWidth: 1,
     borderColor: '#999999',
     borderRadius: 20,
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     marginRight: 10,
   },
   filterButton: {

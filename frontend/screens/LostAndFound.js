@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { firestore, auth } from '../firebase';
 import BottomBar from '../BottomBar';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const LostAndFound = () => {
   const navigation = useNavigation();
@@ -14,7 +14,7 @@ const LostAndFound = () => {
 
   useEffect(() => {
     const unsubscribe = firestore.collection('items').onSnapshot(snapshot => {
-      const itemsData = snapshot.docs.map(doc => doc.data());
+      const itemsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setItems(itemsData);
     });
 
@@ -38,6 +38,29 @@ const LostAndFound = () => {
     navigation.navigate('ListingPage');
   };
 
+  const deleteListing = (itemId) => {
+    Alert.alert(
+      'Delete Listing',
+      'Are you sure you want to delete this listing?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            firestore.collection('items').doc(itemId).delete()
+              .then(() => {
+                console.log('Listing deleted successfully!');
+              })
+              .catch(error => {
+                console.log('Error deleting listing:', error);
+              });
+          }
+        }
+      ]
+    );
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
@@ -45,15 +68,18 @@ const LostAndFound = () => {
         <Text style={styles.itemName}>{item.itemName}</Text>
         <Text style={styles.itemDescription}>Description: {item.description}</Text>
         <Text style={styles.itemLocation}>Location: {item.location}</Text>
-        {item.username && (
-          <Text style={styles.itemUsername}>
-            Posted By: <Text style={styles.usernameText}>{item.username}</Text>
-          </Text>
+        <Text style={styles.itemteleHandle}>Tele handle: @{item.teleHandle}</Text>
+        {item.username === username && (
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => deleteListing(item.id)}
+          >
+            <MaterialIcons name="delete" size={20} color="#888" />
+          </TouchableOpacity>
         )}
       </View>
     </View>
   );
-  
 
   const filteredItems = items.filter(item =>
     (item.itemName && item.itemName.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -72,9 +98,6 @@ const LostAndFound = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.pageTitle}>Lost and Found</Text>
-        <TouchableOpacity style={styles.createChatButtonContainer} onPress={handleAddListing}>
-          <Ionicons name="add-circle-outline" size={24} style={styles.createChatButtonIcon} />
-        </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
         <TextInput
@@ -83,6 +106,9 @@ const LostAndFound = () => {
           value={searchQuery}
           onChangeText={text => setSearchQuery(text)}
         />
+        <TouchableOpacity style={styles.createListing} onPress={handleAddListing}>
+          <MaterialIcons name="post-add" size={25} color="#ffffff" />
+        </TouchableOpacity>
       </View>
       <View style={styles.toggleContainer}>
         <TouchableOpacity
@@ -133,27 +159,29 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: 'bold',
   },
-  createChatButtonContainer: {
-    marginLeft: 'auto',
-  },
-  createChatButtonIcon: {
-    color: '#333',
-    paddingRight: 8,
+  createListing: {
+    backgroundColor: '#009688',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 2,
-    paddingLeft: 6,
+    paddingHorizontal: 5,
+    marginBottom: 8,
   },
   searchInput: {
     flex: 1,
+    height: 40,
     borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 8,
+    borderColor: '#999999',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    marginRight: 10,
   },
   toggleContainer: {
     marginLeft: 6,
@@ -207,18 +235,27 @@ const styles = StyleSheet.create({
   itemDescription: {
     fontSize: 14,
     color: '#888',
-  
   },
   itemLocation: {
+    fontSize: 14,
+    color: '#888',
+  },
+  itemteleHandle: {
     fontSize: 14,
     color: '#888',
   },
   itemUsername: {
     fontSize: 14,
     color: '#888',
+    marginTop: 4,
   },
   usernameText: {
     fontWeight: 'normal',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
   },
 });
 
