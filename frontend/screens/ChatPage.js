@@ -13,6 +13,7 @@ const ChatPage = ({ navigation }) => {
   const [messageText, setMessageText] = useState('');
   const [username, setUsername] = useState('');
   const [searchText, setSearchText] = useState('');
+  const [searchText2, setSearchText2] = useState('');
   const [filteredChats, setFilteredChats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [moduleOptions, setModuleOptions] = useState([]);
@@ -61,6 +62,17 @@ const ChatPage = ({ navigation }) => {
       setFilteredChats(filtered);
     }
   }, [searchText, chats]);
+
+  useEffect(() => {
+    if (searchText2 === '') {
+      setModuleOptions(chats.map(chat => chat.moduleCode));
+    } else {
+      const filtered = chats.filter(chat =>
+        chat.moduleCode && chat.moduleCode.toLowerCase().includes(searchText2.toLowerCase())
+      );
+      setModuleOptions(filtered.map(chat => chat.moduleCode));
+    }
+  }, [searchText2, chats]);
 
   useEffect(() => {
     if (showAllModules) {
@@ -240,7 +252,16 @@ const ChatPage = ({ navigation }) => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Select Modules</Text>
+            <Text style={styles.modalTitle}>Select Modules</Text>
+              <View style={styles.searchContainer2}>
+                <TextInput
+                  style={styles.searchInput2}
+                  placeholder="Search modules..."
+                  value={searchText2}
+                  onChangeText={setSearchText2}
+                  autoCapitalize="none"
+                />
+              </View>
               <ScrollView style={styles.moduleList}>
                 <View style={styles.moduleOptionsContainer}>
                   {moduleOptions.map((moduleCode) => (
@@ -401,6 +422,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: '80%',
+    height: '42%',
     alignItems: 'center',
   },
   modalTitleSubmit: {
@@ -413,7 +435,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 13,
   },
   moduleList: {
     width: '100%',
@@ -489,6 +511,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   searchInput: {
+    flex: 1,
+    height: '100%',
+    borderWidth: 1,
+    borderColor: '#999999',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    marginRight: 10,
+  },
+  searchContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    height: '9%',
+  },
+  searchInput2: {
     flex: 1,
     height: '100%',
     borderWidth: 1,
