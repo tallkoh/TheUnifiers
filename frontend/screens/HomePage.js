@@ -22,8 +22,10 @@ const HomePage = () => {
   const [tempSelectedChannels, setTempSelectedChannels] = useState([]);
   const [addChannelPop, setAddChannelPop] = useState(false);
   const [channelUsername, setChannelUsername] = useState('');
+  const [isUpdateNewsComplete, setIsUpdateNewsComplete] = useState(false);
 
   useEffect(() => {
+    console.log('fetching news')
     const fetchNews = async () => {
       try {
         const newsRef = firestore.collection('news').orderBy('timestamp', 'desc');
@@ -37,7 +39,39 @@ const HomePage = () => {
     };
 
     fetchNews();
+  }, [isUpdateNewsComplete]);
+
+  useEffect(() => {
+    console.log('maybe error here')
+    updateNews();
   }, []);
+
+  const updateNews = async () => {
+    try {
+      console.log("updating news")
+      const channels = await firestore.collection('channels').get();
+      const channelUsernames = channels.docs.map(doc => doc.data().channel_username);
+
+      const promises = channelUsernames.map((channelUsername) => {
+        return fetch(`https://uni-backend.onrender.com/channels/${channelUsername}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({}),
+        })  
+          .then(response => response.json())
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+        });
+      await Promise.all(promises);
+      console.log('its done')
+      setIsUpdateNewsComplete(true);
+    } catch (error) {
+      console.log('Error updating news:', error);
+    }
+  };
   
   useEffect(() => {
     const fetchChannels = async () => {
