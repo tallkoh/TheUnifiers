@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, KeyboardAvoidingView, TouchableOpacity, SafeAreaView, Modal, ScrollView } from 'react-native';
+import Filter from 'bad-words';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../BottomBar';
@@ -19,6 +20,7 @@ const ChatPage = ({ navigation }) => {
   const [moduleOptions, setModuleOptions] = useState([]);
   const [tempSelectedModules, setTempSelectedModules] = useState([]);
   const flatListRef = useRef(null);
+  const filter = new Filter();
   const currentChatMessages = currentChat?.messages || [];
 
   useEffect(() => {
@@ -92,24 +94,26 @@ const ChatPage = ({ navigation }) => {
     if (!currentChat || messageText.trim() === '') {
       return;
     }
-
+  
+    const filteredMessage = filter.clean(messageText.trim());
+  
     const newMessage = {
       username: username,
-      message: messageText.trim(),
+      message: filteredMessage,
     };
     setMessageText('');
-
+  
     const updatedMessages = [...currentChat.messages, newMessage];
-
+  
     await firestore.collection('chats').doc(currentChat.id).update({
       messages: updatedMessages,
     });
-
-    setCurrentChat(prevChat => ({
+  
+    setCurrentChat((prevChat) => ({
       ...prevChat,
       messages: updatedMessages,
     }));
-
+  
     // Scroll to the last message
     if (currentChatMessages.length > 0) {
       flatListRef.current.scrollToEnd();
