@@ -271,25 +271,25 @@ const HomePage = () => {
               <ActivityIndicator size="large" color="#009688" /> 
               ) : (
                 <>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter Channel Username"
-                    value={channelUsername}
-                    autoCapitalize="none"
-                    onChangeText={(text) => {
-                      const trimmedText = text.trim();
-                      const regex = /^[a-zA-Z0-9_]*$/;
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Channel Username"
+                value={channelUsername}
+                autoCapitalize="none"
+                onChangeText={(text) => {
+                  const trimmedText = text.trim();
+                  const regex = /^[a-zA-Z0-9_]*$/;
 
-                      if (regex.test(trimmedText)) {
-                        setChannelUsername(trimmedText);
-                      }
-                    }}
-                />
-                <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
-                  <Text style={styles.applyButtonText}>Submit</Text>
-                </TouchableOpacity>
-                </>
-                )}
+                  if (regex.test(trimmedText)) {
+                    setChannelUsername(trimmedText);
+                  }
+                }}
+              />
+              <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
+                <Text style={styles.applyButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </>
+            )}
             </View>
           </View>
       </Modal>
@@ -333,8 +333,8 @@ const HomePage = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
-              <Text style={styles.applyButtonText}>Submit</Text>
+            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
+              <Text style={styles.applyButtonText}>Apply</Text>
             </TouchableOpacity>
           </View>
         </View>
