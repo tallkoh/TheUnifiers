@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 import axios from 'axios';
@@ -14,6 +14,7 @@ const HomePage = () => {
   const [news, setNews] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filteredNews, setFilteredNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [showAllChats, setShowAllChats] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [channelOptions, setChannelOptions] = useState([]);
@@ -204,6 +205,7 @@ const HomePage = () => {
 
   const handleSubmitUsername = async () => {
     try {
+      setIsLoading(true); 
       const response = await axios.post(`https://uni-backend.onrender.com/channels/${channelUsername}`);
       // Handle the response as needed
       console.log(response.data);
@@ -215,6 +217,8 @@ const HomePage = () => {
       // Handle error if request fails
       console.error(error);
       Alert.alert('Error', 'Failed to submit channel username.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -263,23 +267,29 @@ const HomePage = () => {
                   <Icon name="close" size={25} color="#fff" />
                 </TouchableOpacity>
               </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Channel Username"
-              value={channelUsername}
-              autoCapitalize="none"
-              onChangeText={(text) => {
-                const trimmedText = text.trim();
-                const regex = /^[a-zA-Z0-9_]*$/;
+              {isLoading ? (
+              <ActivityIndicator size="large" color="#009688" /> 
+              ) : (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Channel Username"
+                    value={channelUsername}
+                    autoCapitalize="none"
+                    onChangeText={(text) => {
+                      const trimmedText = text.trim();
+                      const regex = /^[a-zA-Z0-9_]*$/;
 
-                if (regex.test(trimmedText)) {
-                  setChannelUsername(trimmedText);
-                }
-              }}
-            />
-            <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
-              <Text style={styles.applyButtonText}>Submit</Text>
-            </TouchableOpacity>
+                      if (regex.test(trimmedText)) {
+                        setChannelUsername(trimmedText);
+                      }
+                    }}
+                />
+                <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
+                  <Text style={styles.applyButtonText}>Submit</Text>
+                </TouchableOpacity>
+                </>
+                )}
             </View>
           </View>
       </Modal>
@@ -323,8 +333,8 @@ const HomePage = () => {
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
-              <Text style={styles.applyButtonText}>Apply</Text>
+            <TouchableOpacity style={styles.applyButton} onPress={handleSubmitUsername}>
+              <Text style={styles.applyButtonText}>Submit</Text>
             </TouchableOpacity>
           </View>
         </View>
