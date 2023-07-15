@@ -127,7 +127,8 @@ content: {
   image: {
     width: 200,
     height: 200,
-    resizeMode: 'center',
+    aspectRatio: 1,
+    resizeMode: 'contain',
   },
   input: {
     width: '80%',
