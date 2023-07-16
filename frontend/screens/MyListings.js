@@ -21,7 +21,7 @@ const MyListings = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+      <Image source={{ uri: item.image }} style={styles.itemImage} />
       <View style={styles.itemInfoContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDescription}>{item.description}</Text>

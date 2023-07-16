@@ -1,25 +1,61 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { firestore, auth } from '../firebase';
+import { firestore, auth, storage } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const ListingPage = () => {
   const navigation = useNavigation();
-  const [imageUri, setImageUri] = useState(null);
+  const [image, setImage] = useState('');
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [teleHandle, setTeleHandle] = useState('');
+  const [progress, setProgress] = useState(0);
 
-  const handleChooseImage = () => {
-    launchImageLibrary({ mediaType: 'photo' }, response => {
-      if (!response.didCancel && !response.errorCode) {
-        setImageUri(response.assets[0].uri);
+  async function pickImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspectRatio: [3, 4],
+      quality: 1
+    })
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      await uploadImage(result.assets[0].uri, "image")
+      // setImageUri(result.uri);
+    }
+  }
+
+  async function uploadImage(uri, fileType) {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `images/` + new Date().getTime());
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        setProgress(progress.toFixed());
+        console.log("DOne")
+      },
+      (error) => {
+        console.log(error)
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+          console.log('File available at', downloadURL);
+          setImage(downloadURL);
+        })
       }
-    });
-  };
+    )
+  }
+
 
   const handleAddItem = async () => {
     const user = await firestore.collection('users').doc(auth.currentUser.uid).get();
@@ -28,7 +64,7 @@ const ListingPage = () => {
     
     try {
       const newItem = {
-        image: imageUri,
+        image: image,
         itemName: itemName,
         description: description,
         location: location,
@@ -40,7 +76,7 @@ const ListingPage = () => {
       await firestore.collection('items').add(newItem);
   
       // Reset the form fields
-      setImageUri(null);
+      setImage('');
       setItemName('');
       setDescription('');
       setLocation('');
@@ -59,9 +95,9 @@ const ListingPage = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={24} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleChooseImage}>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+      <TouchableOpacity onPress={pickImage}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.imagePreview} />
         ) : (
           <Text style={styles.chooseImageText}>Choose Image</Text>
         )}

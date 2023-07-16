@@ -63,7 +63,7 @@ const LostAndFound = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+      <Image source={{ uri: item.image }} style={styles.itemImage} />
       <View style={styles.itemInfoContainer}>
         <Text style={styles.itemName}>{item.itemName}</Text>
         <Text style={styles.itemDescription}>Description: {item.description}</Text>
@@ -212,25 +212,29 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    marginBottom: 16,
+    margin: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
   itemImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     resizeMode: 'cover',
     borderRadius: 4,
+    marginRight: 10,
+    marginLeft: 5,
+    marginBottom: 10,
   },
   itemInfoContainer: {
     flex: 1,
-    marginLeft: 8,
+    marginBottom: 15,
+    // marginLeft: 8,
   },
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom: 4,
+    // marginBottom: 4,
   },
   itemDescription: {
     fontSize: 14,
@@ -247,7 +251,7 @@ const styles = StyleSheet.create({
   itemUsername: {
     fontSize: 14,
     color: '#888',
-    marginTop: 4,
+    //marginTop: 4,
   },
   usernameText: {
     fontWeight: 'normal',
