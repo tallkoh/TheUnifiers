@@ -4,6 +4,7 @@ import Filter from 'bad-words';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../BottomBar';
+import RenderChatItem from './RenderChatItem';
 import { ChatContext } from '../ChatContext';
 import { firestore, auth } from '../firebase';
 
@@ -84,7 +85,25 @@ const ChatPage = ({ navigation }) => {
       setFilteredChats(filtered);
     }
   }, [selectedModules, showAllModules, chats]);
-
+  
+  const renderMessageItem = ({ item }) => {
+    const isSentByCurrentUser = item.username === username;
+    const containerStyle = isSentByCurrentUser
+      ? styles.sentMessageContainer
+      : styles.receivedMessageContainer;
+  
+    return (
+      <View style={[styles.messageItemContainer, containerStyle]}>
+        <View style={styles.messageItem}>
+          <Text style={styles.username}>{item.username}</Text>
+          <View style={styles.messageContent}>
+            <Text style={styles.messageText}>{item.message}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+  
   const handleChatPress = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
     setCurrentChat(chat);
@@ -120,12 +139,6 @@ const ChatPage = ({ navigation }) => {
     }
   };
 
-  const renderChatItem = ({ item }) => (
-    <TouchableOpacity key={item.id} style={styles.chatItem} onPress={() => handleChatPress(item.id)}>
-      <Text style={styles.chatTitle}>{item.moduleCode}</Text>
-    </TouchableOpacity>
-  );
-
   const handleFilter = () => {
     setShowAllModules(selectedModules.length === 0);
 
@@ -149,24 +162,6 @@ const ChatPage = ({ navigation }) => {
     }
 
     setModalVisible(false);
-  };
-
-  const renderMessageItem = ({ item, index }) => {
-    const isSentByCurrentUser = item.username === username;
-    const containerStyle = isSentByCurrentUser
-      ? styles.sentMessageContainer
-      : styles.receivedMessageContainer;
-
-    return (
-      <View style={[styles.messageItemContainer, containerStyle]}>
-        <View style={styles.messageItem}>
-          <Text style={styles.username}>{item.username}</Text>
-          <View style={styles.messageContent}>
-            <Text style={styles.messageText}>{item.message}</Text>
-          </View>
-        </View>
-      </View>
-    );
   };
 
   if (currentChat) {
@@ -244,7 +239,9 @@ const ChatPage = ({ navigation }) => {
         </View>
         <FlatList
           data={filteredChats.slice().reverse()}
-          renderItem={renderChatItem}
+          renderItem={({ item }) => (
+            <RenderChatItem item={item} handleChatPress={handleChatPress} />
+          )}
           keyExtractor={(item) => item.id.toString()} // Use the id property as the key
           contentContainerStyle={styles.messageList}
         />
