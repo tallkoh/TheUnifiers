@@ -24,6 +24,31 @@ const ChatPage = ({ navigation }) => {
   const filter = new Filter();
   const currentChatMessages = currentChat?.messages || [];
 
+  // Function to unsubscribe the chat messages listener
+  const chatMessagesUnsubscribe = useRef(null);
+
+  useEffect(() => {
+    // Subscribe to chat messages
+    if (currentChat) {
+      chatMessagesUnsubscribe.current = firestore.collection('chats').doc(currentChat.id).onSnapshot(snapshot => {
+        const chatData = snapshot.data();
+        if (chatData) {
+          setCurrentChat((prevChat) => ({
+            ...prevChat,
+            messages: chatData.messages || [],
+          }));
+        }
+      });
+    }
+
+    // Unsubscribe chat messages listener when the component unmounts or currentChat changes
+    return () => {
+      if (chatMessagesUnsubscribe.current) {
+        chatMessagesUnsubscribe.current();
+      }
+    };
+  }, [currentChat]);
+
   useEffect(() => {
     const unsubscribe = firestore.collection('chats').onSnapshot(snapshot => {
       const updatedChats = [];
@@ -85,13 +110,13 @@ const ChatPage = ({ navigation }) => {
       setFilteredChats(filtered);
     }
   }, [selectedModules, showAllModules, chats]);
-  
+
   const renderMessageItem = ({ item }) => {
     const isSentByCurrentUser = item.username === username;
     const containerStyle = isSentByCurrentUser
       ? styles.sentMessageContainer
       : styles.receivedMessageContainer;
-  
+
     return (
       <View style={[styles.messageItemContainer, containerStyle]}>
         <View style={styles.messageItem}>
@@ -103,7 +128,7 @@ const ChatPage = ({ navigation }) => {
       </View>
     );
   };
-  
+
   const handleChatPress = (chatId) => {
     const chat = chats.find((c) => c.id === chatId);
     setCurrentChat(chat);
@@ -113,26 +138,26 @@ const ChatPage = ({ navigation }) => {
     if (!currentChat || messageText.trim() === '') {
       return;
     }
-  
+
     const filteredMessage = filter.clean(messageText.trim());
-  
+
     const newMessage = {
       username: username,
       message: filteredMessage,
     };
     setMessageText('');
-  
+
     const updatedMessages = [...currentChat.messages, newMessage];
-  
+
     await firestore.collection('chats').doc(currentChat.id).update({
       messages: updatedMessages,
     });
-  
+
     setCurrentChat((prevChat) => ({
       ...prevChat,
       messages: updatedMessages,
     }));
-  
+
     // Scroll to the last message
     if (currentChatMessages.length > 0) {
       flatListRef.current.scrollToEnd();
@@ -253,7 +278,15 @@ const ChatPage = ({ navigation }) => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Modules</Text>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Modules</Text>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Icon name="close" size={25} color="#fff" />
+                </TouchableOpacity>
+              </View>
               <View style={styles.searchContainer2}>
                 <TextInput
                   style={styles.searchInput2}
@@ -328,6 +361,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 3,
+  },
+  closeButton: {
+    position: 'absolute', 
+    right: 2,
+    backgroundColor: '#009688',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   innerHeader: {
     flexDirection: 'row',
@@ -414,9 +457,11 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+    marginTop: 10,
+    marginBottom: 10,
   },
   modalContent: {
     backgroundColor: '#ffffff',
@@ -430,13 +475,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 13,
   },
   moduleList: {
     width: '100%',
@@ -524,7 +567,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    height: '9%',
+    height: '11%',
   },
   searchInput2: {
     flex: 1,
