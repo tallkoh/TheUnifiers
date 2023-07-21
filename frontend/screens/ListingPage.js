@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { firestore, auth, storage } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
@@ -91,7 +91,9 @@ const ListingPage = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={24} />
       </TouchableOpacity>
@@ -133,7 +135,7 @@ const ListingPage = () => {
         autoCapitalize='none'
       />
       <Button title="Add Item" onPress={handleAddItem} />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
