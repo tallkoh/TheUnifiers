@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, RefreshControl, Alert } from 'react-native';
-import { useNavigation, NavigationContainer } from '@react-navigation/native';
+import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, RefreshControl, Alert, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 import axios from 'axios';
 import logo from '../assets/logo_transparent_notext.jpeg';
@@ -24,7 +24,8 @@ const HomePage = () => {
   const [tempSelectedChannels, setTempSelectedChannels] = useState([]);
   const [addChannelPop, setAddChannelPop] = useState(false);
   const [channelUsername, setChannelUsername] = useState('');
-  const [isUpdateNewsComplete, setIsUpdateNewsComplete] = useState(false);
+  const [modalSearchText, setModalSearchText] = useState('');
+  const [filteredChannelOptions, setFilteredChannelOptions] = useState([]);
 
   useEffect(() => {
     fetchNews();
@@ -59,6 +60,7 @@ const HomePage = () => {
   const onRefresh = () => {
     setRefreshing(true);
     fetchNews();
+    fetchChannels();
     setRefreshing(false);
   };
 
@@ -71,7 +73,6 @@ const HomePage = () => {
     }
   }, [channelOptionsFetched]);
   
-
   useEffect(() => {
     if (searchText === '') {
       setFilteredNews(news);
@@ -84,19 +85,15 @@ const HomePage = () => {
   }, [searchText, news]);
 
   useEffect(() => {
-    const fetchChannels = async () => {
-      try {
-        const channelRef = firestore.collection('channels');
-        const snapshot = await channelRef.get();
-        const channelData = snapshot.docs.map(doc => doc.data().channel_name);
-        setChannelOptions(channelData);
-      } catch (error) {
-        console.log('Error fetching channels:', error);
-      }
-    };
-  
-    fetchChannels();
-  }, []);
+    if (modalSearchText === '') {
+      setFilteredChannelOptions(channelOptions); // Use the original list of all channels
+    } else {
+      const filtered = channelOptions.filter((channel) =>
+        channel.toLowerCase().includes(modalSearchText.toLowerCase())
+      );
+      setFilteredChannelOptions(filtered);
+    }
+  }, [modalSearchText, channelOptions]);
   
   const handleLogout = () => {
     auth
@@ -291,11 +288,29 @@ const HomePage = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Channels</Text>
-            <View style={styles.channelList}>
-              {channelOptions.map(channel => (
+        <View style={styles.modalContainer2}>
+          <View style={styles.modalContent2}>
+            <View style={styles.modalHeader2}>
+              <Text style={styles.modalTitle2}>Select Channels</Text>
+              <TouchableOpacity
+                  style={styles.closeButton2}
+                  onPress={() => setModalVisible(false)}
+              >
+                <Icon name="close" size={25} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            {/* Add the search bar for modal */}
+            <View style={styles.searchContainer2}>
+              <TextInput
+                style={styles.searchInput2}
+                placeholder="Search channels..."
+                value={modalSearchText}
+                onChangeText={setModalSearchText}
+                autoCapitalize="none"
+              />
+            </View>
+            <ScrollView style={styles.channelList}>
+              {filteredChannelOptions.map((channel) => (
                 <TouchableOpacity
                   key={channel}
                   style={[
@@ -304,7 +319,7 @@ const HomePage = () => {
                   ]}
                   onPress={() => {
                     const updatedChannels = tempSelectedChannels.includes(channel)
-                      ? tempSelectedChannels.filter(c => c !== channel)
+                      ? tempSelectedChannels.filter((c) => c !== channel)
                       : [...tempSelectedChannels, channel];
                     setTempSelectedChannels(updatedChannels);
                   }}
@@ -324,7 +339,7 @@ const HomePage = () => {
                   )}
                 </TouchableOpacity>
               ))}
-            </View>
+            </ScrollView>
             <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
               <Text style={styles.applyButtonText}>Apply</Text>
             </TouchableOpacity>
@@ -502,6 +517,64 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
+  },
+  closeButton2: {
+    position: 'absolute', 
+    right: 2,
+    backgroundColor: '#009688',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContainer2: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalHeader2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
+    marginBottom: 10, 
+  },
+  modalContent2: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    height: '42%',
+    alignItems: 'center',
+  },
+  modalTitleSubmit2: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalTitle2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  searchContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    height: '11%',
+    width: '100%',
+  },
+  searchInput2: {
+    flex: 1,
+    height: '100%',
+    borderWidth: 1,
+    borderColor: '#999999',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    marginRight: 10,
   },
 });
 
