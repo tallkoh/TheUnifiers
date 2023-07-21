@@ -131,7 +131,14 @@ const ListingPage = () => {
         style={styles.input}
         placeholder="Tele Handle"
         value={teleHandle}
-        onChangeText={text => setTeleHandle(text)}
+        onChangeText={(text) => {
+          const trimmedText = text.trim();
+          const regex = /^[a-zA-Z0-9_]*$/;
+
+          if (regex.test(trimmedText)) {
+            setTeleHandle(trimmedText);
+          }
+        }}
         autoCapitalize='none'
       />
       <Button title="Add Item" onPress={handleAddItem} />
