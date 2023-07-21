@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { auth, firestore } from '../firebase';
 import axios from 'axios';
@@ -12,6 +12,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const HomePage = () => {
   const navigation = useNavigation();
   const [news, setNews] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredNews, setFilteredNews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,69 +27,41 @@ const HomePage = () => {
   const [isUpdateNewsComplete, setIsUpdateNewsComplete] = useState(false);
 
   useEffect(() => {
-    console.log('fetching news')
-    const fetchNews = async () => {
-      try {
-        const newsRef = firestore.collection('news').orderBy('timestamp', 'desc');
-        const snapshot = await newsRef.get();
-        const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_name: doc.data().channel_name, timestamp: doc.data().timestamp.toDate() }));
-        setNews(newsData);
-        setFilteredNews(newsData);
-      } catch (error) {
-        console.log('Error fetching news:', error);
-      }
-    };
-
     fetchNews();
-  }, [isUpdateNewsComplete]);
-
-  useEffect(() => {
-    console.log('maybe error here')
-    updateNews();
+    fetchChannels();
   }, []);
 
-  const updateNews = async () => {
+  const fetchNews = async () => {
+    console.log('fetching news');
     try {
-      console.log("updating news")
-      const channels = await firestore.collection('channels').get();
-      const channelUsernames = channels.docs.map(doc => doc.data().channel_username);
-
-      const promises = channelUsernames.map((channelUsername) => {
-        return fetch(`https://uni-backend.onrender.com/channels/${channelUsername}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({}),
-        })  
-          .then(response => response.json())
-          .catch((error) => {
-            console.error('Error:', error);
-          });
-        });
-      await Promise.all(promises);
-      console.log('its done')
-      setIsUpdateNewsComplete(true);
+      const newsRef = firestore.collection('news').orderBy('timestamp', 'desc');
+      const snapshot = await newsRef.get();
+      const newsData = snapshot.docs.map(doc => ({ id: doc.id, message_text: doc.data().message_text, channel_name: doc.data().channel_name, timestamp: doc.data().timestamp.toDate() }));
+      setNews(newsData);
+      setFilteredNews(newsData);
     } catch (error) {
-      console.log('Error updating news:', error);
+      console.log('Error fetching news:', error);
     }
   };
   
-  useEffect(() => {
-    const fetchChannels = async () => {
-      try {
-        const channelRef = firestore.collection('channels');
-        const snapshot = await channelRef.get();
-        const channelData = snapshot.docs.map(doc => doc.data().channel_name);
-        setChannelOptions(channelData);
-        setChannelOptionsFetched(true);
-      } catch (error) {
-        console.log('Error fetching channels:', error);
-      }
-    };
+  const fetchChannels = async () => {
+    try {
+      const channelRef = firestore.collection('channels');
+      const snapshot = await channelRef.get();
+      const channelData = snapshot.docs.map(doc => doc.data().channel_name);
+      setChannelOptions(channelData);
+      setChannelOptionsFetched(true);
+    } catch (error) {
+      console.log('Error fetching channels:', error);
+    }
+  };
 
-    fetchChannels();
-  }, []);
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchNews();
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     if (channelOptionsFetched) {
       // Set initial selected channels to all available channels
@@ -203,23 +176,39 @@ const HomePage = () => {
     setModalVisible(false);
   };
 
-  const handleSubmitUsername = async () => {
-    try {
-      setIsLoading(true); 
-      const response = await axios.post(`https://uni-backend.onrender.com/channels/${channelUsername}`);
-      // Handle the response as needed
-      console.log(response.data);
-      // Reset the input
-      setChannelUsername('');
-      // Close the popup
-      setAddChannelPop(false);
-    } catch (error) {
-      // Handle error if request fails
-      console.error(error);
-      Alert.alert('Error', 'Failed to submit channel username.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmitUsername = () => {
+    setIsLoading(true);
+
+    axios
+      .post(`https://uni-backend.onrender.com/channels/${channelUsername}`)
+      .then((response) => {
+        // Handle the response as needed
+        console.log(response.data);
+        const statusCode = response.status;
+        setChannelUsername('');
+        setAddChannelPop(false);
+
+        switch (statusCode) {
+          case 200:
+            Alert.alert('Success', 'Channel username submitted successfully.');
+            break;
+          default:
+            setSubmitMessage('Something went wrong. Please try again.');
+            break;
+        }
+      })
+      .catch((error) => {
+        // Handle error if request fails
+        // console.log(error.response);
+        if (error.response && error.response.status === 500) {
+          Alert.alert('Error', 'Channel username already exists or is invalid.');
+        } else {
+          Alert.alert('Error', 'Something went wrong. Please try again.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -254,6 +243,9 @@ const HomePage = () => {
         renderItem={renderNewsItem}
         keyExtractor={item => `${item.id}-${item.channel_name}`}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       <Modal visible={addChannelPop} 
         animationType="slide"
