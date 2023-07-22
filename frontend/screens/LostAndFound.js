@@ -228,13 +228,11 @@ const styles = StyleSheet.create({
   itemInfoContainer: {
     flex: 1,
     marginBottom: 15,
-    // marginLeft: 8,
   },
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
-    // marginBottom: 4,
   },
   itemDescription: {
     fontSize: 14,
@@ -251,14 +249,12 @@ const styles = StyleSheet.create({
   itemUsername: {
     fontSize: 14,
     color: '#888',
-    //marginTop: 4,
   },
   usernameText: {
     fontWeight: 'normal',
   },
   deleteButton: {
     position: 'absolute',
-    top: 8,
     right: 8,
   },
 });
