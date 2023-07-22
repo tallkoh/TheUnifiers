@@ -206,6 +206,9 @@ const HomePage = () => {
       .finally(() => {
         setIsLoading(false);
       });
+
+      fetchChannels();
+      fetchNews();
   };
 
   return (
