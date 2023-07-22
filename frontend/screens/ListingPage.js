@@ -141,7 +141,12 @@ const ListingPage = () => {
         }}
         autoCapitalize='none'
       />
-      <Button title="Add Item" onPress={handleAddItem} />
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={handleAddItem}
+      >
+        <Text style={styles.buttonText}>Add Item</Text>
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backButton: {
-    paddingTop: 30,
+    paddingTop: 40,
     position: 'absolute',
     top: 16,
     left: 16,
@@ -176,6 +181,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderColor: '#ccc',
     borderWidth: 1,
+  },
+  buttonContainer: {
+    width: '40%',
+    padding: 15,
+    backgroundColor: '#009688',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
   },
 });
 
