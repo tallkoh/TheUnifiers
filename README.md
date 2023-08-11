@@ -28,10 +28,11 @@ We aim to centralise information sourcing for university news and discussions in
 Install Expo Go on IOS or Android and scan the QR codes below:
 
 IOS: <br />
-<img src="https://github.com/tallkoh/TheUnifiers/assets/74520346/3a6e0d0c-8457-4b9f-a16f-b2698a30b622" width="200"> <br />
+<img src="https://github.com/tallkoh/TheUnifiers/assets/110431837/20c6a8ff-8471-468d-9a45-619f6da85a86" width="200"> <br />
+
 
 Android: <br />
-<img src="https://github.com/tallkoh/TheUnifiers/assets/74520346/7d1928e9-dba9-4ae6-ab6e-56976be2ae80" width="200"> <br />
+<img src="https://github.com/tallkoh/TheUnifiers/assets/110431837/c41e2f9a-11c2-4319-a452-e77243a3aeea" width="200"> <br />
 
 Backend Repository: [Link](https://github.com/tallkoh/unified-backend/)
 
